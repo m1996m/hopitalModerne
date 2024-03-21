@@ -1,0 +1,74 @@
+<div class="row">
+  <div class="col-md-12" style="margin: 2%">
+    <div class="shadow-none p-1 mb-1 rounded" style="border: 1px solid lightgray;background:white;" >
+      <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">
+          Listes des hopitaux
+      </h4>
+      <div class="row" style="margin-bottom: 1%;margin: 1%">
+        <div class="col-md-6">
+          <div class="row">
+            <form #form="ngForm">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="content">Mot clé</label>
+                    <input type="text" class="form-control" name="content" id="content" ngModel (keyup)="recherche({'content':form.value.content})">
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6" style="text-align: right;">
+          <a (click)="openCreateHoppital()" style="color: white">
+            <button type="reset"  class="btn-sm rounded" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Nouvel hopital</button>
+          </a>
+        </div>
+      </div>
+      <nz-table #fixedTable [nzData]="listOfData" [nzScroll]="{ x: '1150px', y: '240px' }" nzType="primary" style=";margin: 1%">
+        <thead style="background: #1677ff">
+        <tr>
+          <th nzLeft>Designation</th>
+          <th nzLeft>Pays </th>
+          <th>tel</th>
+          <th>Adresse</th>
+          <th>Numéro unique</th>
+          <th>Agréement</th>
+          <th>Date création</th>
+          <th nzRight>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of hopitals">
+          <td nzLeft>{{ data?.designation }}</td>
+          <td nzLeft>{{ data?.pays }}</td>
+          <td>{{ data?.tel }}</td>
+          <td>{{ data?.adresse }}</td>
+          <td>{{ data?.numero_unique }}</td>
+          <td>{{ data?.agrement }}</td>
+          <td>{{ data?.date_creation | date:'dd/MM/yyyy'  }}</td>
+
+          <td nzRight>
+            <div class="row">
+              <div class="col-md-6">
+                <button class="btn rounded-2"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">
+                  <a (click)="openEditeHoppital(data)" style="color: white">
+                    <span nz-icon nzType="edit" nzTheme="outline" ></span>
+                  </a>
+                </button>
+              </div>
+              <div class="col-md-6">
+                <button class="btn btn-danger" (click)="showDeleteConfirm(data?.slug)"  > <span nz-icon nzType="delete" nzTheme="outline"></span></button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>
+<app-hopital-create></app-hopital-create>
+<app-hopital-edit></app-hopital-edit>
+
+

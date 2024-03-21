@@ -1,0 +1,114 @@
+<nz-layout class="layout">
+  <nz-sider class="menu-sidebar"
+            nzCollapsible
+            nzWidth="256px"
+            nzBreakpoint="md"
+            [nzTheme]="'light'"
+            [(nzCollapsed)]="isCollapsed"
+            [nzTrigger]="null">
+    <div class="logo"></div>
+    <ul nz-menu nzTheme="light" nzMode="inline" [nzInlineCollapsed]="isCollapsed" >
+      <li nz-submenu nzTitle="Profile" nzIcon="user" style="color: black">
+        <ul>
+          <li nz-menu-item>
+            <a  routerLink="/rendv/mesRdv">Mes rendez-vous</a>
+          </li>
+          <li nz-menu-item >
+            <a  routerLink="/patient/">Mes patients</a>
+          </li>
+          <li nz-menu-item>
+            <a  routerLink="/user/profile/{{user?.slug}}">Profile</a>
+          </li>
+          <li nz-menu-item>
+            <a  routerLink="/">Déconnexion</a>
+          </li>
+        </ul>
+      </li>
+
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="user"></span>
+        <span>
+          <a style="color: black" routerLink="/user">Utilisateur</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="file"></span>
+        <span>
+          <a style="color: black" routerLink="/hopital" >Hopital</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="user"></span>
+        <span>
+          <a style="color: black" routerLink="/personnel" >Personnel</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="user"></span>
+        <span>
+          <a style="color: black" routerLink="/patient" >Patient</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="file"></span>
+        <span>
+          <a style="color: black" routerLink="/rendv" >Rendez-vous</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="file"></span>
+        <span>
+          <a style="color: black" routerLink="/rendv/priseRdv">Rendez-vous</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="file"></span>
+        <span>
+          <a style="color: black" routerLink="/consultation">Consultation</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="file"></span>
+        <span>
+          <a style="color: black" routerLink="/examen">Examen</a>
+        </span>
+      </li>
+      <li nz-menu-item nzMatchRouter >
+        <span nz-icon nzType="file"></span>
+        <span>
+          <a style="color: black" routerLink="/ordonnance">Ordonnance</a>
+        </span>
+      </li>
+    </ul>
+
+  </nz-sider>
+  <nz-layout [ngClass]="isCollapsed ? 'right-layout-collapsed ': 'right-layout-sider-full'">
+    <nz-header>
+      <div class="app-header">
+        <div class="row">
+          <div class="col-md-2">
+            <span class="header-trigger" >
+              <i class="trigger" (click)="isCollapsed = !isCollapsed"
+                 nz-icon
+                 [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+              ></i>
+           </span>
+          </div>
+          <div class="col-md-10">
+            <span style="text-align: right;margin-left: 84%" >
+              <a *ngIf="connexionService.userInfo?.username == ''" routerLink="/connexion/login" class="btn-sm rounded"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">
+                Connexion
+              </a>
+              <a (click)="logout()" *ngIf="connexionService.userInfo?.username != ''" class="btn-sm rounded"  style="color:white;border: none;background: Red;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">
+                Déconnexion
+              </a>
+          </span>
+          </div>
+        </div>
+      </div>
+    </nz-header>
+    <nz-content>
+      <router-outlet></router-outlet>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

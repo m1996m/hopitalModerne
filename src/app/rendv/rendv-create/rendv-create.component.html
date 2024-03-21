@@ -1,0 +1,62 @@
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Ajout utilisateur" (nzOnCancel)="handleCancel()" [nzWidth]="800" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <div class="row">
+      <div class="col-md-12" style="margin: 2%">
+        <div class="shadow-none p-1 mb-1 rounded" style="border: 1px solid lightgray;background:white;" >
+          <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Création rendez-vous</h4>
+          <!--Filtre-->
+          <div class="row" style="margin-bottom: 1%;margin: 1%">
+            <div class="col-md-12">
+              <form style="margin-top: 1%" [formGroup]="formulaire">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="personnel_id">Personnel</label>
+                    <select (change)="getOnePernnel()" formControlName="personnel_id" id="personnel_id" class="form-control form-select">
+                      <option value="">Choisir un personnel</option>
+                      <option *ngFor="let perso of personnels" value="{{perso?.slug}}">Dr {{perso?.nom}} {{perso?.prenom}}</option>
+                    </select>
+                    <label for="choix">Type Génération</label>
+                    <select  formControlName="choix" id="choix" class="form-control form-select">
+                      <option value="automatique">Automatique</option>
+                      <option value="manuelle">Manuelle</option>
+                    </select>
+                    <label for="date_jour">Date début</label>
+                    <input type="date" (change)="getdate()" id="date_jour" class="form-control" formControlName="date_jour">
+                    <label for="dateFin">Date Fin</label>
+                    <input type="date" (change)="getdate()" id="dateFin" class="form-control" formControlName="fin">
+                    <p style="color: red" *ngIf="!isSemaine && formulaire.get('date_jour')?.value.length>2 && formulaire.get('fin')?.value.length>2">Veuillez entrer deux dates d'une même semaine</p>
+                    <label for="heureDebut">Heure début</label>
+                    <input type="time" id="heureDebut" class="form-control" formControlName="heureDebut">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="type">Type rendez-vous</label>
+                    <select  formControlName="type" id="type" class="form-control form-select">
+                      <option value="Consultation">Consultation</option>
+                      <option value="Examen">Examen</option>
+                      <option value="Ordonnance">Ordonnance</option>
+                    </select>
+                    <label for="heureFin">Heure Fin</label>
+                    <input type="time" id="heureFin" class="form-control" formControlName="heureFin">
+                    <label for="intervalle">Intervalle entre deux rendez-vous</label>
+                    <input type="number" id="intervalle" class="form-control" formControlName="intervalle">
+                    <label for="heureDebutPause">Heure début pause</label>
+                    <input type="time" id="heureDebutPause" class="form-control" formControlName="heureDebutPause">
+                    <label for="heureFinPause">Heure Fin pause</label>
+                    <input type="time" id="heureFinPause" class="form-control" formControlName="heureFinPause">
+                  </div>
+                </div>
+                <div class="row" style="margin-top: 1%;margin-bottom: 1%;">
+                  <div class="col-md-4 offset-md-4" style="text-align: right">
+                    <button class="rounded-2" (click)="enregistrer()"  type="submit" nz-button nzType="primary"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 16px;padding-top: 8px;">
+                      <span>Enregister</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nz-modal>

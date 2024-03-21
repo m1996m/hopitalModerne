@@ -1,0 +1,123 @@
+<!--Modification hopital-->
+<nz-modal [(nzVisible)]="isVisibleUpdate" nzTitle="Modification Spécialité" (nzOnCancel)="handleCancelUpdate()" [nzWidth]="600" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <div class="row">
+      <div class="col-md-12">
+        <form [formGroup]="formulaireUpadate" >
+          <div class="row">
+            <div class="col-md-6 offset-md-3">
+              <label for="desiu">Nom spécialité</label>
+              <input type="text" id="desiu"  formControlName="designation" class="form-control">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div *nzModalFooter>
+    <div class="row">
+      <div class="col-md-2" style="text-align: left">
+        <button type="cancel" class="btn btn-danger" (click)="handleCancelUpdate()">Fermer</button>
+      </div>
+      <div class="col-md-7"></div>
+      <div class="col-md-3" style="text-align: right;">
+        <button  (click)="showConfirm()" type="submit" class="btn btn-primary" >Enregister</button>
+      </div>
+    </div>
+  </div>
+</nz-modal>
+<!--Ajout hopital-->
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Ajout spécialité" (nzOnCancel)="handleCancel()" [nzWidth]="600" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <div class="row">
+      <div class="col-md-12">
+        <form [formGroup]="formulaire" >
+          <div class="row">
+            <div class="col-md-6">
+              <label for="hopital">Hopital</label>
+              <select  formControlName="hopital" id="hopital" class="form-control form-select"  *ngIf= " connexionService.userInfo.role == 'USER_HOPITAL' ">
+                <option value="{{connexionService?.userInfo?.hopital[0].slug}}">{{connexionService?.userInfo?.hopital[0].designation}}</option>
+              </select>
+              <select  formControlName="hopital" id="hopital" class="form-control form-select"  *ngIf= "connexionService.userInfo.role =='ADMIN'">
+                <option *ngFor="let hopital of hopitals" value="{{hopital?.slug}}">{{hopital?.designation}}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="desi">Nom spécialité</label>
+              <input type="text" id="desi"  formControlName="designation" class="form-control">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div *nzModalFooter>
+    <div class="row">
+      <div class="col-md-2" style="text-align: left">
+        <button type="cancel" class="btn btn-danger" (click)="handleCancel()">Fermer</button>
+      </div>
+      <div class="col-md-7"></div>
+      <div class="col-md-3" style="text-align: right;">
+        <button  (click)="create()" type="submit" class="btn btn-primary" (click)="handleOk()" (click)="isConfirmLoading">Enregister</button>
+      </div>
+    </div>
+  </div>
+</nz-modal>
+
+<!--Affichage des patients-->
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <div class="card" style="">
+      <!--Filtre-->
+      <div class="row" style="margin-bottom: 1%;margin:1%">
+        <div class="col-md-6">
+          <div class="row">
+            <form #form="ngForm">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-6">
+                    <select name="hopital" [ngModel]="connexionService.userInfo?.hopital[0].slug"  class="form-control form-select" (change)="getAll({'content':form.value.hopital})"
+                            *ngIf= " connexionService.userInfo.role == 'ADMIN' ">
+                      <option value="">Hopital</option>
+                      <option *ngFor="let hopital of hopitals" value="{{hopital?.slug}}">{{hopital?.designation}}</option>
+                    </select>
+                    <select  name="hopital"  (change)="getAll({'content':form.value.hopital})" class="form-control form-select"  *ngIf= " connexionService.userInfo.role == 'USER_HOPITAL' ">
+                      <option value="{{connexionService?.userInfo?.hopital[0].slug}}">{{connexionService?.userInfo?.hopital[0].designation}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6" style="text-align: right;">
+          <button type="reset" (click)="showModal1()" class="btn-sm rounded"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Nouvelle spécialité</button>
+        </div>
+      </div>
+      <nz-table #fixedTable [nzData]="listOfData" [nzScroll]="{ x: '1150px', y: '240px' }" nzType="primary">
+        <thead style="background: #1677ff">
+        <tr>
+          <th nzLeft>Designation</th>
+          <th nzRight>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of profiles">
+          <td nzLeft>{{ data?.designation }}</td>
+          <td nzRight>
+            <div class="row">
+              <div class="col-md-6">
+                <button class="btn btn-primary" (click)="updateModale()" (click)="getOne(data)" ><span nz-icon nzType="edit" nzTheme="outline" ></span></button>
+              </div>
+              <div class="col-md-6">
+                <button class="btn btn-danger" (click)="showDeleteConfirm(data?.id)" > <span nz-icon nzType="delete" nzTheme="outline"></span></button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>
+

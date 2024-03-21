@@ -1,0 +1,96 @@
+<div class="row" style="margin: 1%;">
+  <div class="col-md-12" style="margin-right: 1%;margin-left: 1%">
+    <nz-card style="width:100%;" >
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Ajout examen</h4>
+        </div>
+      </div>
+      <div class="col-md-12" >
+        <form [formGroup]="formulaire">
+
+          <div class="row" >
+            <div class="col-md-6" >
+              <label for="type">Examens à faire</label>
+              <select formControlName="type" id="type" class="form-control form-select">
+                <option value="">Choisir un type</option>
+                <option value="Sang">Sang</option>
+                <option value="Sel">Sel</option>
+                <option value="urine">Urine</option>
+                <option value="Radiographie">Radiographie</option>
+                <option value="Scanner">Scanner</option>
+                <option value="Echographie">Echographie</option>
+                <option value="Colopathie">Colopathie</option>
+              </select>
+              <label for="patient_id">Choisir un patient</label>
+              <input (blur)="getOnePatient()" type="text" id="patient_id" placeholder="E-mail du patient" formControlName="patient_id" class="form-control">
+              <label for="date_jour">Date examen</label>
+              <input type="date" id="date_jour"  formControlName="date_jour" class="form-control">
+              <label for="consultation_id">Consultation liée</label>
+              <select formControlName="consultation_id" id="consultation_id" class="form-control form-select">
+                <option value="">Choisir une consultation</option>
+                <option *ngFor="let consul of oneConsultation" value="{{consul?.slug}}">{{consul.date_visite | date:'dd/MM/yyyy' }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="cout">Coût de l'examen</label>
+              <input type="text" id="cout"  formControlName="cout" class="form-control">
+              <label for="image">Joindre une image</label>
+              <input type="file" id="image"  formControlName="image" class="form-control">
+              <label for="autre">Autre chose à préciser</label>
+              <textarea formControlName="autre" id="autre" cols="30" rows="3" class="form-control"></textarea>
+              <label for="resultat">Résultat</label>
+              <div class="row">
+                <div class="col-md-9">
+                  <input (focusin)="verificationValeur('resultat')" type="text" id="resultat" class="form-control" formControlName="resultat">
+                </div>
+                <div class="col-md-3" style="text-align: left">
+                  <button  (click)="chargeTable('resultat')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                    <span>Ajouter</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="row" >
+              <div class="col-md-8 offset-md-2">
+                <div class="card" *ngIf="isResultat" style="margin-top: 2%">
+                  <div class="row">
+                    <div class="col-md-6" style="text-align: center">
+                      <h4>{{inputValue}}</h4>
+                    </div>
+                    <div class="col-md-6" style="text-align: center">
+                      <h4>Actions</h4>
+                    </div>
+                  </div>
+                </div>
+                <cdk-virtual-scroll-viewport *ngIf="isResultat"  style="height: 320px;margin-right: 1%;margin-left: 1%;color: black" [itemSize]="90" >
+                  <button class="btn btn-danger " (click)="cancel()" style="margin-top: 1%">
+                    <span  >Fermer</span>
+                  </button>
+                  <div class="row" *ngFor="let data of donnees; let i = index" style="margin-top: 1%;">
+                    <div class="col-md-6" style="text-align: center" >
+                      <span style="font-size: 15px">{{data.data}}</span>
+                    </div>
+                    <div class="col-md-6" style="text-align: center">
+                      <button class="btn btn-danger " (click)="deleteTable(inputValue,i)" >
+                        <span nz-icon nzType="delete" nzTheme="outline" ></span>
+                      </button>
+                    </div>
+                  </div>
+                </cdk-virtual-scroll-viewport>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 offset-md-3">
+              <button class="rounded-2" (click)="enregistrer()"  type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%">
+                <span>Enregister</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </nz-card>
+  </div>
+</div>

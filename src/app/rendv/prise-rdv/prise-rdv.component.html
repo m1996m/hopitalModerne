@@ -1,0 +1,99 @@
+
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Personnel" (nzOnCancel)="handleCancel()" [nzWidth]="500" [nzBodyStyle]="styles">
+  <div *nzModalContent>
+    <div class="row">
+      <div class="col-md-10 offset-md-1">
+        <nz-card style="width:100%"  >
+          <div class="row">
+            <div class="col-md-12">
+              <h4 style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Choisir un medecin</h4>
+            </div>
+          </div>
+          <div class="col-md-12" >
+            <div class="col-md-12">
+              <form  #f = "ngForm" >
+                <div class="row">
+                  <div class="col-md-6">
+                    <select (change)="recherchePersonnel({'hopital': slugHopital,'service':f.value.service})" name="service" id="service" class="form-control rounded-2 form-select" ngModel>
+                      <option value="" >Service</option>
+                      <option *ngFor="let service of services" value="{{service?.designation}}">{{service?.designation}}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <select (change)="engegister(f)" name="content" id="content" class="form-control rounded-2 form-select" ngModel>
+                      <option value="" >Chosir un personnel</option>
+                      <option *ngFor="let perrso of personnels" value="{{perrso?.designation}}">{{perrso?.designation}}</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+  <div *nzModalFooter>
+    <div class="row">
+      <div class="col-md-2" style="text-align: left">
+        <button type="cancel" class="btn btn-danger" (click)="handleCancel()">Fermer</button>
+      </div>
+      <div class="col-md-7"></div>
+      <div class="col-md-3" style="text-align: right;">
+      </div>
+    </div>
+  </div>
+</nz-modal>
+
+
+<div class="row">
+  <div class="col-md-10 offset-md-1" >
+    <div class="card rounded" style="border: 1px solid lightgray;background:white;" >
+      <div class="row" style="background: #1423DC;color:white; margin-right: 1%;margin-left: 1%;align-content: center">
+        <div class="col-md-6">
+          <h4 class="rounded-2" style="text-align: left;color: white">Prise rendez-vous</h4>
+        </div>
+        <div class="col-md-6">
+          <h4 class="rounded-2" style="text-align: right;color: white">
+            <button (click)="showModal1()" style="background: #1423DC;color:white;border: none">Choisir un personnel <span nz-icon nzType="search" nzTheme="outline"></span></button>
+          </h4>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom: 1%;">
+        <div class="col-md-12">
+          <cdk-virtual-scroll-viewport  style="height: 320px;margin-left: 1%" [itemSize]="90" >
+            <div class="row" style="margin-top: 1%;margin-bottom: 1%;margin-right: 0.5%">
+              <div class="col-md-6" style="text-align: left;">
+                <button class="rounded-2" (click)="previousWeek()"  type="submit" nz-button nzType="primary"  style="color:white;border: none;background: lightskyblue;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 16px;padding-top: 8px;">
+                  <span>Précédent</span>
+                </button>
+              </div>
+              <div class="col-md-6" style="text-align: right;">
+                <button class="rounded-2" (click)="nextWeek()"  type="submit" nz-button nzType="primary"  style="color:white;border: none;background: lightskyblue;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 16px;padding-top: 8px;">
+                  <span>Suivant</span>
+                </button>
+              </div>
+            </div>
+            <table style="width: 100%;">
+              <thead >
+                <th *ngFor="let day of days">{{day?.jour}} {{day.date | date:'dd/MM/yyyy'}}</th>
+              </thead>
+              <tbody>
+              <tr>
+                <td *ngFor="let day of days">
+                  <div *ngFor="let rdv of getRendezvousForDay(day.date,rdvs)">
+                    <button *ngIf="rdv.rdv_patient.length == 0 || rdv.rdv_patient.length == 0 " (click)="showDeleteConfirm(rdv)"  type="submit" nz-button nzType="primary"  style="color:white;border: none;background: lightskyblue;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 3%">
+                      <span>{{ prependZeroIfNotNumber(rdv?.plage) }}</span>
+                    </button>
+                    <span style="text-align: center;background: grey; padding-left: 25%;padding-right: 25%;padding-top: 2px;padding-bottom:2px;color:white;margin-top: 2%" *ngIf="rdv.rdv_patient[0]?.statut == 'Validé' || rdv.rdv_patient[0]?.statut == 'Annulé' ">-</span>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </cdk-virtual-scroll-viewport>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

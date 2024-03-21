@@ -1,0 +1,143 @@
+<div class="row">
+  <div class="col-md-12" style="margin: 2%">
+    <div class="shadow-none p-1 mb-1 rounded" style="border: 1px solid lightgray;background:white;" >
+      <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Gestion de profile</h4>
+      <div class="row">
+        <div class="col-md-5">
+          <div class="row">
+            <div class="col-md-3">
+              <img src="assets/avatar/user.png" alt="image" width="100">
+            </div>
+            <div class="col-md-9">
+              <h4 style="margin-top: 6%" *ngIf="role=='USER_PERSONNEL'">
+                Dr {{user?.nom}} {{user?.prenom}}
+              </h4>
+              <h4 style="margin-top: 6%" *ngIf="role=='USER_PATIENT'">
+                Mr {{user?.nom}} {{user?.prenom}}
+              </h4>
+              <span class="address-line" *ngIf="role=='USER_PERSONNEL'">{{user?.poste}} à l'hopital {{hopital?.designation}}</span>
+              <span class="address-line" *ngIf="role=='USER_PATIENT'">{{user?.profession}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-7" style="margin-top: 2%">
+          <div class="row">
+            <div class="col-md-5">
+              <a routerLink="/user/upload/{{user.slug}}" style="color: white">
+                <button type="reset" class="btn-sm rounded"  style="color:white;border: none;background: black;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Changer de photo</button>
+              </a>
+            </div>
+            <div class="col-md-5">
+              <a routerLink="/user/change/mdp/{{user.slug}}" style="color: white">
+                <button type="reset" class="btn-sm rounded" style="color:white;border: none;background: black;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Modifier mot de passe</button>
+              </a>
+            </div>
+            <div class="col-md-2">
+              <a routerLink="/patient/edite/{{user.slug}}" style="color: white" *ngIf="role=='USER_PATIENT'">
+                <button class="btn-sm rounded"  style="color:white;border: none;background: black;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Editer</button>
+              </a>
+              <a routerLink="/personnel/edite/{{user.slug}}" style="color: white" *ngIf="role=='USER_PERSONNEL'">
+                <button  class="btn-sm rounded"  style="color:white;border: none;background: black;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Editer</button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="info()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-9 rounded-2" style="color:white">
+                    Informations personnelles
+                  </div>
+                  <div class="col-md-3" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <button style="border: none;color: white;background: #1423DC"><span  *ngIf="!isInfo">+</span></button>
+                    <button style="border: none;color: white;background: #1423DC"><span  *ngIf="isInfo">-</span></button>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="isInfo" style="font-size: 20px">
+              <span class="address-line"><span>Nom:</span> {{user?.nom}}</span>
+              <span class="address-line"><span>Prenom:</span> {{user?.prenom}}</span>
+              <span class="address-line"><span>Date de naissance:</span> {{user?.date_naissance | date:'dd/MM/yyyy'}}</span>
+              <span class="address-line"><span>Genre:</span> {{user?.genre}}</span>
+              <span class="address-line"><span>Nationnalité:</span> {{user?.nationnalite}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="proff()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-10 rounded-2" style="color:white">
+                    Informations professionnelles
+                  </div>
+                  <div class="col-md-2" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <button style="border: none;color: white;background: #1423DC"><span *ngIf="!isProf">+</span></button>
+                    <button style="border: none;color: white;background: #1423DC"><span *ngIf="isProf">-</span></button>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="isProf" style="font-size: 20px">
+              <span class="address-line" *ngIf="role=='USER_PERSONNEL'"><span>Poste:</span> {{user?.poste}}</span>
+              <span class="address-line" *ngIf="role=='USER_PATIENT'"><span>Profession:</span> {{user?.profession}}</span>
+              <span class="address-line" *ngIf="role=='USER_PERSONNEL'"><span>Spécialité:</span> {{user?.profile}}</span>
+              <span class="address-line" *ngIf="role=='USER_PERSONNEL'"><span>Service:</span> {{user?.service}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom: 1%">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="contact()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-10 rounded-2" style="color:white">
+                    contacts
+                  </div>
+                  <div class="col-md-2" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <button style="border: none;color: white;background: #1423DC"><span  *ngIf="!iscontact">+</span></button>
+                    <button style="border: none;color: white;background: #1423DC"><span  *ngIf="iscontact">-</span></button>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="iscontact" style="font-size: 20px">
+              <span class="address-line"><span>Tel:</span> {{user?.tel}}</span>
+              <span class="address-line"><span>E-mail:</span> {{user?.email}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="desc()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-10 rounded-2" style="color:white">
+                    En savoir plus sur moi
+                  </div>
+                  <div class="col-md-2" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <button style="border: none;color: white;background: #1423DC"><span  *ngIf="!isDesc">+</span></button>
+                    <button style="border: none;color: white;background: #1423DC"><span  *ngIf="isDesc">-</span></button>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="isDesc" style="font-size: 20px">
+              <span class="address-line">{{user?.description}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

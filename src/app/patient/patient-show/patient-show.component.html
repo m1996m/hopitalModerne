@@ -1,0 +1,114 @@
+<div class="row">
+  <div class="col-md-12" style="margin: 2%">
+    <div class="shadow-none p-1 mb-1 rounded" style="border: 1px solid lightgray;background:white;" >
+      <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Detail Patient</h4>
+      <div class="row">
+        <div class="col-md-5">
+          <div class="row">
+            <div class="col-md-3">
+              <img src="assets/avatar/user.png" alt="image" width="100">
+            </div>
+            <div class="col-md-9">
+              <h4 style="margin-top: 6%">
+                Mr {{patient?.nom}} {{patient?.prenom}}
+              </h4>
+              <p>{{patient?.profession}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="info()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-9 rounded-2" style="color:white">
+                    Informations personnelles
+                  </div>
+                  <div class="col-md-3" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <span *ngIf="!isInfo">+</span>
+                    <span *ngIf="isInfo">-</span>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="isInfo" style="font-size: 20px">
+              <p><span>Nom:</span> {{patient?.nom}}</p>
+              <p><span>Prenom:</span> {{patient?.prenom}}</p>
+              <p><span>Date de naissance:</span> {{patient?.date_naissance | date:'dd/MM/yyyy'}}</p>
+              <p><span>Genre:</span> {{patient?.genre}}</p>
+              <p><span>Nationnalité:</span> {{patient?.nationnalite}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="proff()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-10 rounded-2" style="color:white">
+                    Informations professionnelles
+                  </div>
+                  <div class="col-md-2" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <span *ngIf="!isProf">+</span>
+                    <span *ngIf="isProf">-</span>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="isProf" style="font-size: 20px">
+              <p><span>Poste:</span> {{patient?.profession}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom: 1%">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="contact()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-10 rounded-2" style="color:white" >
+                    contacts
+                  </div>
+                  <div class="col-md-2" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <span *ngIf="!iscontact">+</span>
+                    <span *ngIf="iscontact">-</span>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="iscontact" style="font-size: 20px">
+              <p><span>Tel:</span> {{patient?.tel}}</p>
+              <p><span>E-mail:</span> {{patient?.email}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header" style="background: #1423DC;color:white;"  (click)="desc()">
+              <h4>
+                <div class="row">
+                  <div class="col-md-10 rounded-2" style="color:white" >
+                    En savoir plus sur moi
+                  </div>
+                  <div class="col-md-2" style="text-align: right;color:white;background: #1423DC;font-size: 24px">
+                    <span *ngIf="!isDesc">+</span>
+                    <span *ngIf="isDesc">-</span>
+                  </div>
+                </div>
+              </h4>
+            </div>
+            <div class="card-body" *ngIf="isDesc" style="font-size: 20px">
+              <p>{{personnel?.description}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+::ng-deep .ant-modal-header {
+  background-color: #1423DC;
+  color: white;
+}
+
+
+::ng-deep .ant-modal-header div{
+  color: white;
+}
+.custom-modal .ant-modal-header i,
+.custom-modal .ant-modal-footer i {
+  color: white !important;
+}

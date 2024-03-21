@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-md-12" style="margin: 2%">
+    <div class="shadow-none p-1 mb-1 rounded" style="border: 1px solid lightgray;background:white;" >
+      <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Liste des crenneaux rendez-vous</h4>
+      <!--Filtre-->
+      <div class="row" style="margin-bottom: 1%;margin: 1%">
+        <div class="col-md-6">
+          <div class="row">
+            <form #form="ngForm">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-4">
+                    <select class="form-control form-select" name="personnel_id" id="personnel_id" ngModel >
+                      <option value="">Choisir un medecin</option>
+                      <option *ngFor="let perso of personnels" value="{{perso?.slug}}">Dr {{perso?.nom}} {{perso?.prenom}}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <input type="date" name="content" [ngModel]="currentStartDate | date:'yyyy-MM-dd'" class="form-control">
+                  </div>
+                  <div class="col-md-4" style="text-align: right;">
+                    <button (click)="getRendezvous({'content':form.value.content, 'personnel_id':form.value.personnel_id})" type="reset" class="btn-sm rounded"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Valider</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6" style="text-align: right;">
+          <a (click)="openCreateRendv()">
+            <button type="reset" class="btn-sm rounded"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;">Nouveau rendez-vous</button>
+          </a>
+        </div>
+      </div>
+      <!--Affichage des patients-->
+      <cdk-virtual-scroll-viewport  style="height: 300px;margin-left: 1%" [itemSize]="90" >
+        <nz-table #fixedTable nzType="primary" style=";margin: 1%">
+          <thead style="background: #1677ff">
+          <tr>
+            <th nzLeft>Date de rendez-vous</th>
+            <th nzLeft>Heure </th>
+            <th>Date création</th>
+            <th nzRight>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let data of rdvs">
+            <td nzLeft>{{ data?.date_jour | date: 'dd/MM/yyyy' }}</td>
+            <td nzLeft>{{ data?.plage }}</td>
+            <td>{{ data?.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td nzRight>
+              <div class="row">
+                <div class="col-md-6">
+                  <a routerLink="/rendv/edite/{{data?.slug}}">
+                    <button class="btn btn-primary"  ><span nz-icon nzType="edit" nzTheme="outline" ></span></button>
+                  </a>
+                </div>
+                <div class="col-md-6">
+                  <button class="btn btn-danger" (click)="showDeleteConfirm(data?.id)" > <span nz-icon nzType="delete" nzTheme="outline"></span></button>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </nz-table>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  </div>
+</div>
+<app-rendv-create></app-rendv-create>

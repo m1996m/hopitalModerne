@@ -1,0 +1,81 @@
+<div class="row">
+  <div class="col-md-12" style="margin: 2%">
+    <div class="shadow-none p-1 mb-1 rounded" style="border: 1px solid lightgray;background:white;" >
+      <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Liste des patients</h4>
+      <!--Filtre-->
+      <div class="row" style="margin-bottom: 1%; margin: 1%">
+        <div class="col-md-6">
+          <div class="row">
+            <form #form="ngForm">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-6">
+                    <select (change)="getPatient({'content': form.value.content})"  class="form-control" name="content"
+                            id="content" [ngModel]="slugPersonnel" (keyup)="recherche(form)">
+                      <option value="">Choisir un medecin</option>
+                      <option *ngFor="let perso of personnels" value="{{perso?.slug}}">Dr {{perso?.nom}} {{perso?.prenom}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6" style="text-align: right;">
+          <a (click)="openCreatePatient()">
+            <button type="reset" class="btn-sm rounded" style="color:white;border: none;background: #1423DC;
+            color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;
+            padding-top: 8px;text-align: right;">Nouveau Patient</button>
+          </a>
+        </div>
+      </div>
+      <!--Affichage des patients-->
+      <nz-table #fixedTable [nzData]="listOfData" [nzScroll]="{ x: '1150px', y: '240px' }" nzType="primary" style=";margin: 1%">
+        <thead style="background: #1677ff">
+        <tr>
+          <th nzLeft>Nom</th>
+          <th nzLeft>prenom </th>
+          <th>tel</th>
+          <th>Adresse</th>
+          <th>Date Naissance</th>
+          <th>Genre</th>
+          <th>Profession</th>
+          <th>Email</th>
+          <th nzRight>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of patients">
+          <td nzLeft>{{ data?.nom }}</td>
+          <td nzLeft>{{ data?.prenom }}</td>
+          <td>{{ data?.tel }}</td>
+          <td>{{ data?.adresse }}</td>
+          <td>{{ data?.date_naissance  | date:'dd/MM/yyyy' }}</td>
+          <td>{{ data?.genre }}</td>
+          <td>{{ data?.profession}}</td>
+          <td>{{ data?.email}}</td>
+          <td nzRight>
+            <div class="row">
+              <div class="col-md-4">
+                <a (click)="openEditePatient(data)">
+                  <button class="btn btn-primary"  ><span nz-icon nzType="edit" nzTheme="outline" ></span></button>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <button class="btn btn-danger" (click)="showDeleteConfirm(data?.slug)" > <span nz-icon nzType="delete" nzTheme="outline"></span></button>
+              </div>
+              <div class="col-md-4">
+                <a routerLink="/patient/detail/{{data?.slug}}">
+                  <button class="btn btn-primary"  ><span nz-icon nzType="eye" nzTheme="outline"></span></button>
+                </a>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>
+<app-patient-create></app-patient-create>
+<app-patient-edite></app-patient-edite>

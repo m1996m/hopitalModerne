@@ -1,0 +1,117 @@
+<div class="row" style="margin: 1%;">
+  <div class="col-md-10 offset-md-1">
+    <nz-card style="width:100%;" >
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Ajout ordonnance</h4>
+        </div>
+      </div>
+      <div class="col-md-12" >
+        <div class="row">
+          <div class="col-md-4" >
+          </div>
+          <div class="col-md-4" >
+          </div>
+          <div class="col-md-4" style="text-align: right">
+            <a routerLink="/ordonnance">
+              <button type="reset" class="btn-sm rounded"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;margin-right: 1%;margin-left: 1%">
+                Liste Ordonnance
+              </button>
+            </a>
+          </div>
+        </div>
+        <form [formGroup]="formulaire">
+
+          <div class="row" >
+            <div class="col-md-6" *ngIf="!isResultat">
+              <label for="patient_id">Choisir un patient</label>
+              <input (blur)="getOnePatient()" type="text" id="patient_id" placeholder="E-mail du patient" formControlName="patient_id" class="form-control">
+              <label for="consultation_id"> Consultation liée</label>
+              <select formControlName="consultation_id" id="consultation_id" class="form-control form-select">
+                <option value="">Choisir une consultation</option>
+                <option *ngFor="let consul of oneConsultation" value="{{consul?.slug}}">{{consul.date_visite | date:'dd/MM/yyyy' }}</option>
+              </select>
+              <label for="motif">Motif du produit</label>
+              <input  type="text" id="motif"  formControlName="motif" class="form-control">
+              <label for="produit">Produit</label>
+              <input (click)="verificationValeur()" type="text" id="produit" formControlName="produit" class="form-control" placeholder="nom du produit">
+            </div>
+            <div class="col-md-6" *ngIf="isResultat">
+              <div class="row" >
+                <div class="col-md-12">
+                  <div class="card"  style="margin-top: 2%">
+                    <div class="row">
+                      <div class="col-md-6" style="text-align: center">
+                        <h6>Produit</h6>
+                      </div>
+                      <div class="col-md-3" style="text-align: center">
+                        <h6>Qté</h6>
+                      </div>
+                      <div class="col-md-3" style="text-align: center">
+                        <h6>Actions</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <cdk-virtual-scroll-viewport *ngIf="isResultat"  style="height: 320px;margin-right: 1%;margin-left: 1%;color: black" [itemSize]="90" >
+                    <button class="btn btn-danger " (click)="cancel()" style="margin-top: 1%">
+                      <span  >Fermer</span>
+                    </button>
+                    <div class="row" *ngFor="let data of produitT; let i = index" style="margin-top: 1%;">
+                      <div class="col-md-6" style="text-align: center" >
+                        <span style="font-size: 15px">{{data.data}}</span>
+                      </div>
+                      <div class="col-md-3" style="text-align: center" >
+                        <span style="font-size: 15px">{{data.quantite}}</span>
+                      </div>
+                      <div class="col-md-3" style="text-align: center">
+                        <button class="btn btn-danger " (click)="deleteTable(inputValue,i)" >
+                          <span nz-icon nzType="delete" nzTheme="outline" ></span>
+                        </button>
+                      </div>
+                    </div>
+                  </cdk-virtual-scroll-viewport>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="qt">Quantité</label>
+              <input type="text" id="qt" formControlName="quantite" class="form-control" placeholder="quantité">
+              <label for="type">Type de produit</label>
+              <div class="row" >
+                <div class="col-md-8">
+                  <select formControlName="type" id="type" class="form-control form-select">
+                    <option value="">Type produit</option>
+                    <option value="Boite">Boite</option>
+                    <option value="Effervescent">Effervescent</option>
+                    <option value="Flacon">Flacon</option>
+                    <option value="Paquet">Paquet</option>
+                    <option value="Sirop">Sirop</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row" style="margin-top: 1%">
+                <div class="col-md-3" style="text-align: left">
+                  <button  (click)="chargeTable('produit', 'quantite')" class="rounded-2" type="submit"
+                           nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                    <span title="Permet de valider un produit">Valider produit</span>
+                  </button>
+                </div>
+              </div>
+              <label for="desc">Commentaire</label>
+              <textarea  formControlName="description" id="desc" cols="30" rows="3" class="form-control"></textarea>
+            </div>
+            <div class="col-md-12" style="margin-top: 1%">
+              <div class="row">
+                <div class="col-md-6 offset-md-3" style="text-align: center;">
+                  <button class="rounded-2" (click)="enregistrer()"  type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%;text-align: center">
+                    Enregister
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </nz-card>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+<!--Ajout utilisateur-->
+
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Ajout utilisateur" (nzOnCancel)="handleCancel()" [nzWidth]="600" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <div class="row">
+      <div class="col-md-10 offset-md-1">
+        <nz-card style="width:100%"  >
+          <div class="row">
+            <div class="col-md-12">
+              <h4 style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Ajout utilisateur</h4>
+            </div>
+          </div>
+          <div class="col-md-12" >
+            <div class="col-md-12">
+              <form [formGroup]="formulaire">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="type-user">Type d'utilisateur <span class="text-danger">*</span></label>
+                    <select  id="type-user" class="form-control form-select " formControlName="type_user" >
+                      <option value="Hopital">Hopital</option>
+                      <option value="Patient">Patient</option>
+                      <option value="Personnel">Personnel</option>
+                    </select>
+                    <label for="pays">Pays <span class="text-danger">*</span></label>
+                    <input type="text" id="pays" formControlName="pays" class="form-control">
+                    <label for="image">Image</label>
+                    <input type="file" id="image" formControlName="image" class="form-control">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="email">E-mail <span class="text-danger">*</span></label>
+                    <input type="text" id="email" formControlName="username" class="form-control">
+                    <div style="color: red" *ngIf="formulaire?.get('username')?.hasError('email') && formulaire?.get('username')?.touched">
+                      L'adresse e-mail n'est pas valide.
+                    </div>
+                    <label for="mdp">Mot de passe <span class="text-danger">*</span></label>
+                    <input type="password" id="mdp" formControlName="password" class="form-control">
+                    <label for="confirmation">Confirmation <span class="text-danger">*</span></label>
+                    <input type="password" id="confirmation" formControlName="confirmation" class="form-control">
+                    <div style="color: red" *ngIf="formulaire.hasError('mismatch') && formulaire.get('confirmation')?.dirty">
+                      Les mots de passe ne correspondent pas.
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+  <div *nzModalFooter>
+    <div class="row">
+      <div class="col-md-2" style="text-align: left">
+        <button type="cancel" class="btn btn-danger" (click)="handleCancel()">Fermer</button>
+      </div>
+      <div class="col-md-7"></div>
+      <div class="col-md-3" style="text-align: right;">
+        <button  (click)="engegister()" type="submit" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right"  (click)="handleOk()" (click)="isConfirmLoading">Enregister</button>
+      </div>
+    </div>
+  </div>
+</nz-modal>

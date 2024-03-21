@@ -1,0 +1,134 @@
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Ajout utilisateur" (nzOnCancel)="handleCancel()" [nzWidth]="900" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <nz-steps [nzCurrent]="current">
+      <nz-step nzTitle="Données Personnelles"></nz-step>
+      <nz-step nzTitle="Données professionnelles"></nz-step>
+      <nz-step nzTitle="Recapilatif"></nz-step>
+    </nz-steps>
+
+    <div class="row">
+      <div class="col-md-10 offset-md-1">
+        <nz-card style="width:100%"  >
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%" *ngIf="current < 2">Ajout patient</h4>
+            </div>
+          </div>
+          <div class="col-md-12" >
+            <form [formGroup]="formulaire">
+              <div class="row" style="margin: 1%">
+                <!--Données lié à l'hopital-->
+                <div class="col-md-6" *ngIf="current ===1">
+                  <label for="hopital" *ngIf= " role == 'ADMIN' ">Hopital</label>
+                  <select  (change)="onChange($event,'hopital')" formControlName="hopital" id="hopital"
+                           class="form-control rounded-2 form-select" (change)="verificationProfessionnel()" *ngIf= " role == 'ADMIN' ">
+                    <option value="" >Hopital</option>
+                    <option *ngFor="let hopital of hopitals" value="{{hopital?.slug}}">{{hopital?.designation}}</option>
+                  </select>
+
+                  <label for="hopital1" *ngIf= " role == 'USER_HOPITAL' || role == 'USER_PERSONNEL' ">Hopitals</label>
+                  <select (change)="verificationProfessionnel()"  (change)="onChange($event,'hopital')" formControlName="hopital"
+                          id="hopital1" class="form-control rounded-2 form-select" *ngIf= " role == 'USER_HOPITAL' || role == 'USER_PERSONNEL' " >
+                    <option value="{{oneHopital?.slug}}">{{oneHopital?.designation}}</option>
+                  </select>
+
+                  <label for="profession">Profession</label>
+                  <input (keyup)="verificationProfessionnel()" type="text" id="profession" class="form-control rounded-2" formControlName="profession" >
+
+                  <label for="personnel1" *ngIf= " role == 'USER_HOPITAL' || role == 'ADMIN' ">Medecin rattaché</label>
+                  <select (change)="verificationProfessionnel()"  (change)="onChange($event,'personnel')"
+                          formControlName="personnel" id="personnel1" class="form-control rounded-2 form-select" *ngIf= " role == 'USER_HOPITAL' || role == 'ADMIN' ">
+                    <option value="" >Choisir un medecin</option>
+                    <option *ngFor="let perso of personnels" value="{{perso?.slug}}">Dr {{perso?.nom}} {{perso?.prenom}}</option>
+                  </select>
+
+                  <label for="personnel" *ngIf= " role == 'USER_PERSONNEL' ">Medecin rattaché</label>
+                  <select (change)="verificationProfessionnel()"  (change)="onChange($event,'personnel')"
+                          formControlName="personnel" id="personnel" class="form-control rounded-2 form-select" *ngIf= " role == 'USER_PERSONNEL' " >
+                    <option  value="{{onePersonnel?.slug}}">Dr {{onePersonnel?.nom}} {{onePersonnel?.prenom}}</option>
+                  </select>
+                </div>
+                <div class="col-md-6" *ngIf="current ===1">
+
+                  <label for="tel">Email</label>
+                  <input (blur)="getOneUserByEmail()" (keyup)="verificationProfessionnel()" type="text" id="email" formControlName="email" class="form-control rounded-2">
+
+                  <label for="desc">Description</label>
+                  <textarea formControlName="description" id="desc" cols="30" rows="4" class="form-control rounded-2"></textarea>
+                </div>
+
+                <!--Donnees personnels-->
+                <div class="col-md-6" *ngIf="current ===0">
+                  <label for="nom">Nom</label>
+                  <input (keyup)="verificationIdentite()" type="text" id="nom" formControlName="nom" class="form-control rounded-2">
+
+                  <label for="prenom">Prenom</label>
+                  <input (keyup)="verificationIdentite()" type="text" id="prenom" formControlName="prenom" class="form-control rounded-2">
+
+                  <label for="genre">Genre</label>
+                  <select (change)="verificationIdentite()" id="genre" formControlName="genre" class="form-control rounded-2 form-select">
+                    <option value="">Choisir votre genre</option>
+                    <option value="Feminin">Feminin</option>
+                    <option value="Masculin">Masculin</option>
+                  </select>
+
+                  <label for="date_naissance">Date de naissance</label>
+                  <input (change)="verificationIdentite()" type="date" id="date_naissance" formControlName="date_naissance" class="form-control rounded-2">
+
+                </div>
+                <div class="col-md-6" *ngIf="current ===0">
+                  <input type="hidden" id="slug" formControlName="slug" class="form-control rounded-2">
+                  <input type="hidden" id="user_id" formControlName="user_id" class="form-control rounded-2">
+
+                  <label for="tel">Tel</label>
+                  <input (keyup)="verificationIdentite()" type="text" id="tel" formControlName="tel" class="form-control rounded-2">
+
+                  <label for="adresse">Adresse</label>
+                  <input (keyup)="verificationIdentite()" type="text" id="adresse" formControlName="adresse" class="form-control rounded-2">
+
+                  <label for="nationnalite">Nationnalité</label>
+                  <input (keyup)="verificationIdentite()" type="text" id="nationnalite" formControlName="nationnalite" class="form-control rounded-2">
+
+                </div>
+              </div>
+              <!--Recapilatif-->
+              <nz-card style="width:100%;margin: 2%" *ngIf="current==2">
+                <div nz-row>
+                  <div nz-col nzSpan="12">
+                    <p>Nom: {{ formulaire.get('nom')?.value }} </p>
+                    <p>Prenom: {{ formulaire.get('prenom')?.value }} </p>
+                    <p>Genre: {{ formulaire.get('genre')?.value }} </p>
+                    <p>Date de naissance: {{ formulaire.get('date_naissance')?.value }} </p>
+                    <p>Tel: {{ formulaire.get('tel')?.value }} </p>
+                    <p>Adresse: {{ formulaire.get('adresse')?.value }} </p>
+                    <p>E-mail: {{ formulaire.get('email')?.value }} </p>
+                    <p>Nationnalité: {{ formulaire.get('nationnalite')?.value }} </p>
+                  </div>
+                  <div nz-col nzSpan="12" >
+                    <p>Hopital: {{ hospi }} </p>
+                    <p>Profession: {{ formulaire.get('profession')?.value }} </p>
+                    <p>Personnel: {{ pers }} </p>
+                    <p>Description</p>
+                    <nz-card>{{ formulaire.get('description')?.value }} </nz-card>
+                  </div>
+                </div>
+              </nz-card>
+              <div class="steps-action">
+                <button nz-button nzType="default" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 5%" (click)="pre()" *ngIf="current > 0">
+                  <span>Précedent</span>
+                </button>
+                <button nz-button nzType="default" (click)="next()" *ngIf="(current === 0 && isIdentite) || (current === 1 && isProfessionnel)" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;;margin-top: 5%">
+                  <span>Suivant</span>
+                </button>
+                <button (click)="enregistrer()"  type="submit" nz-button nzType="primary" *ngIf="current === 2" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;;margin-top: 5%">
+                  <span>Enregister</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+</nz-modal>
+

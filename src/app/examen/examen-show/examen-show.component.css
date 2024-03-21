@@ -1,0 +1,59 @@
+.address-line {
+  display: block;
+  font-size: 22px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+    display: none;
+  }
+
+  .imprimer,
+  .imprimer * {
+    visibility: visible;
+  }
+
+  .imprimer {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .imprimer,
+  .imprimer * {
+    visibility: visible;
+  }
+
+  .imprimer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%; /* Ajuster la largeur pour occuper toute la page */
+    height: 100%; /* Ajuster la hauteur pour occuper toute la page */
+  }
+  .bouton,#bouton-control {
+    visibility: hidden;
+    display: none;
+  }
+
+  /* Format A3 */
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+  /* Inclure les arrière-plans lors de l'impression */
+  .imprimer {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+}
+
+

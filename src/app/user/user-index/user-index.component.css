@@ -1,0 +1,9 @@
+.my-custom-table .ant-table-thead > tr > th  {
+  background-color: #1423DC;
+  color: white; /* Si vous souhaitez également changer la couleur du texte de l'entête */
+}
+
+.ant-table-thead .ant-table-cell {
+  background-color: green;
+}
+

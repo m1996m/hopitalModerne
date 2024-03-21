@@ -1,0 +1,146 @@
+<!--Detail d'un utilisatur-->
+
+<nz-modal [(nzVisible)]="isVisibleUpdate" nzTitle="Modification utilisateur" (nzOnCancel)="handleCancelUpdate()" [nzWidth]="600" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <div class="row">
+      <div class="col-md-10 offset-md-1">
+        <nz-card style="width:100%"  >
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Modification utilisateur</h4>
+            </div>
+          </div>
+          <div class="col-md-12" >
+            <div class="col-md-12">
+              <form [formGroup]="formulaireUpdate" >
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="type-useru">Type d'utilisateur <span class="text-danger">*</span></label>
+                    <select id="type-useru" class="form-control form-select" formControlName="type_user" >
+                      <option value="Hopital">Hopital</option>
+                      <option value="Patient">Patient</option>
+                      <option value="Personnel">Personnel</option>
+                    </select>
+                    <label for="paysu">Pays <span class="text-danger">*</span></label>
+                    <input type="text" id="paysu" formControlName="pays" class="form-control">
+                    <label for="imageu">Image</label>
+                    <input type="file" id="imageu" formControlName="image" class="form-control">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="emailu">E-mail <span class="text-danger">*</span></label>
+                    <input type="text" id="emailu" formControlName="username" class="form-control">
+                    <div style="color: red" *ngIf="formulaireUpdate?.get('username')?.hasError('email') && formulaireUpdate?.get('username')?.touched">
+                      L'adresse e-mail n'est pas valide.
+                    </div>
+                    <label for="statut">Statut <span class="text-danger">*</span></label>
+                    <select id="statut" class="form-control form-select" formControlName="statut" >
+                      <option value="Actif">Actif</option>
+                      <option value="Suspendu">Suspendu</option>
+                      <option value="Supprimer">Supprimé</option>
+                    </select>
+                    <label for="role">Rôle <span class="text-danger">*</span></label>
+                    <select id="role" class="form-control form-select" formControlName="role" >
+                      <option value="USER_ADMIN">Admin</option>
+                      <option value="USER_HOPITAL">Hopital</option>
+                      <option value="USER_PATIENT">Patient</option>
+                      <option value="USER_PERSONNEL">Personnel</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+  <div *nzModalFooter>
+    <div class="row">
+      <div class="col-md-2" style="text-align: left">
+        <button type="cancel" class="btn btn-danger" (click)="handleCancelUpdate()">Fermer</button>
+      </div>
+      <div class="col-md-7"></div>
+      <div class="col-md-3" style="text-align: right;">
+        <button  (click)="showConfirm(oneUser?.id)" type="submit" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right"  class="rounded-2" (click)="handleOkUpdate()" >Enregister</button>
+      </div>
+    </div>
+  </div>
+</nz-modal>
+
+<div class="row">
+  <div class="col-md-12" style="margin-left: 1%;margin-right: 1%">
+    <nz-card style="width:100%"  >
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Liste des utilisateurs</h4>
+        </div>
+      </div>
+      <div class="col-md-12" >
+        <div class="col-md-12">
+          <div class="row" style="margin-bottom: 1%">
+            <div class="col-md-6">
+              <div class="row">
+                <form #form="ngForm">
+                  <div class="col-md-12">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label for="type">Type d'utilisateur</label>
+                        <select name="type" id="type" class="form-control form-select" ngModel (change)="getUserType(form)">
+                          <option value="hopital">Hopital</option>
+                          <option value="patient">Patient</option>
+                          <option value="personnel">Personnel</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="content">Mot clé</label>
+                        <input type="text" class="form-control" name="content" id="content" ngModel (keyup)="recherche(form)">
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="col-md-6" style="text-align: right;">
+              <button class="btn-sm rounded"  style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;margin-top: 2%" (click)="openCreateUser()">
+                <span style="color: white">Nouvel utilisateur</span>
+              </button>
+            </div>
+          </div>
+          <nz-table #fixedTable [nzData]="listOfData" [nzScroll]="{ x: '1150px', y: '240px' }" class="my-custom-table">
+            <thead style="background: #1677ff">
+            <tr>
+              <th nzLeft>E-mail</th>
+              <th nzLeft>Type </th>
+              <th>Pays</th>
+              <th>Statut</th>
+              <th nzRight>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of users">
+              <td nzLeft>{{ data?.username }}</td>
+              <td nzLeft>{{ data?.type_user }}</td>
+              <td>{{ data?.pays }}</td>
+              <td>{{ data?.statut }}</td>
+              <td nzRight>
+                <div class="row">
+                  <div class="col-md-6">
+                    <button class="rounded-2" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right"  (click)="updateModale()" (click)="getOneUser(data)" >
+                      <span nz-icon nzType="edit" nzTheme="outline" ></span>
+                    </button>
+                  </div>
+                  <div class="col-md-6">
+                    <button class="btn btn-danger" (click)="showDeleteConfirm(data?.id)"  ><span nz-icon nzType="delete" nzTheme="outline"></span></button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>
+<app-user-create></app-user-create>
+
