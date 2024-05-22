@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import {PersonnelModel} from "../../core/models/personnel.model";
 import {HopitalService} from "../../shared/services/web-services/hopital/hopital.service";
 import {FormBuilder} from "@angular/forms";
 import {ServiceService} from "../../shared/services/web-services/service/service.service";
@@ -9,6 +8,9 @@ import {ConsultationService} from "../../shared/services/web-services/consultati
 import {ConsultationModel} from "../../core/models/consultation.model";
 import {PatientService} from "../../shared/services/web-services/patient/patient.service";
 import {RdvService} from "../../shared/services/web-services/rdv/rdv.service";
+import {HopitalReponseDto} from "../../shared/services/web-services/hopital/dto/hopital-reponse.dto";
+import {RdvResponseDto} from "../../shared/services/web-services/rdv/dto/rdv-response.dto";
+import {PatientResponseDto} from "../../shared/services/web-services/patient/dto/patient-response.dto";
 
 @Component({
   selector: 'app-consultation-create',
@@ -19,24 +21,23 @@ export class ConsultationCreateComponent {
 
   formulaire:any;
   consultation: ConsultationModel = new ConsultationModel('','','','','','','','','','','','','','','','','')
-  hopitals:any;
+  hopitals: HopitalReponseDto = [];
   slugHopital='';
-  rdvs:any;
-  slugPersonnel:any;
-  slugSelect:any;
+  rdvs: RdvResponseDto = [];
+  slugPersonnel = '';
+  slugSelect = '';
   current = 0;
   index = 'First-content';
   onePatient:any;
-  patients:any;
-  dateJour:any;
+  patients: PatientResponseDto = [];
+  dateJour = '';
   currentStartDate = new Date();
-  plaintes='';
-  allergies='';
-  antecedent='';
-  autre='';
-  resultats='';
-  examens='';
-
+  plaintes = '';
+  allergies = '';
+  antecedent = '';
+  autre = '';
+  resultats = '';
+  examens = '';
   plaintesT = Array<{data: any}>();
   allergiesT = Array<{data: any}>();
   antecedentT = Array<{data: any}>();
@@ -47,16 +48,71 @@ export class ConsultationCreateComponent {
   isInput = false;
   inputValue = "";
   isResultat = false;
+  yourCustomStyles = {
+    height: '500px', // Exemple : définir la hauteur
+    padding: '20px' // Exemple : définir le padding
+  };
+  isVisible = false;
+  isConclusion = false;
+  isHopital = false;
+  isDiagnotic = false;
+  isPatient = false;
 
-  constructor(private hopitalServie:HopitalService, private fb: FormBuilder,private activiteService: ServiceService,
-              private consultationService: ConsultationService, private route: Router, private connexionService: ConnexionService,
-              private patientService: PatientService, private rdvService: RdvService
+  constructor(
+    private hopitalServie:HopitalService,
+    private fb: FormBuilder,
+    private activiteService: ServiceService,
+    private consultationService: ConsultationService,
+    private route: Router,
+    private connexionService: ConnexionService,
+    private patientService: PatientService,
+    private rdvService: RdvService
   ) {
   }
 
   ngOnInit():void{
     this.chargeFonction();
     this.initForm();
+  }
+
+  verificationPatient(){
+    this.isPatient = false;
+    if (this.formulaire.value['patient_id'].length>2 && this.formulaire.value['date_visite'].length>3 &&
+      this.formulaire.value['taille'].length>2 &&
+      this.formulaire.value['poids'].length>0 && this.formulaire.value['rdv_id'].length>1 &&
+      this.formulaire.value['situation'].length>3){
+      this.isPatient = true;
+    }
+  }
+
+  verificationDiagnotic(){
+    this.isDiagnotic = false;
+    if (
+      this.formulaire.value['fumeur'].length>2 && this.formulaire.value['buveur'].length>2 &&
+      this.formulaire.value['cout'].length > 0
+    ){
+      this.isDiagnotic = true;
+    }
+  }
+
+  verificationConclusion(){
+    this.isConclusion = false;
+    setTimeout(()=>{
+      if (this.resultatsT.length > 0){
+        this.isConclusion = true;
+      }
+    },2000)
+
+  }
+
+  showModal(): void {
+    this.isVisible = true;
+    this.consultationService.notifyModalState(this.isVisible);
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+    this.consultationService.notifyModalState(this.isVisible);
   }
 
   initForm(){
@@ -81,10 +137,8 @@ export class ConsultationCreateComponent {
     });
   }
 
-  getSlug(){
+  getData(){
     this.dateJour = this.currentStartDate.toLocaleString().substring(6,10)+'-'+this.currentStartDate.toLocaleString().substring(3,5)+'-'+this.currentStartDate.toLocaleString().substring(0,2);
-    console.log(this.dateJour);
-    this.connexionService.getUser();
     if(this.connexionService?.userInfo?.hopital?.length>0 || this.connexionService?.userInfo?.personnel?.length>0){
       if(this.connexionService.userInfo.role=="USER_HOPITAL"){
         this.slugHopital =this.connexionService?.userInfo?.hopital[0].slug;
@@ -110,6 +164,7 @@ export class ConsultationCreateComponent {
       this.slugSelect = this.slugPersonnel = this.connexionService.userInfo.patient[0].slug;
     }
   }
+
 
   chargeTable(data: string){
     if (data?.length>2){
@@ -267,21 +322,17 @@ export class ConsultationCreateComponent {
     let dateStrinb = date.toLocaleString()+''+date.toLocaleString();
     this.patientService.getOnepatient(data).subscribe((data:any)=>{
       this.onePatient= data;
-      console.log(data);
       this.formulaire.patchValue({
-        //email: this.onePatient.username,
         slug: btoa(dateStrinb),
         personnel_id: this.connexionService.userInfo.slug,
         patient: data.slug
       });
-      console.log(this.formulaire.value)
     });
   }
 
   chargeFonction(){
-    this.getSlug();
+    this.getData();
     this.getPatient();
-    this.getRdv();
   }
 
   enregistrer(){
@@ -295,7 +346,6 @@ export class ConsultationCreateComponent {
       autre: this.autre,
       examens: this.examens,
       resultat: this.resultats,
-      date_visite: this.formulaire.value['date_visite']+'T00:00:00.000Z',
       slug: btoa(dateStrinb),
       personnel_id: this.slugSelect,
     });
@@ -306,12 +356,12 @@ export class ConsultationCreateComponent {
     this.examens = '';
     this.resultats = '';
     this.consultationService.createconsultation(this.formulaire.value).subscribe((data:any)=>{
-      this.route.navigate(['/consultation']);
+      this.handleCancel();
     });
   }
 
   getRdv(){
-    this.rdvService.getAllrdv({'content':this.dateJour, 'fin':this.dateJour, 'personnel_id': this.slugPersonnel}).subscribe((data:any)=>{
+    this.rdvService.getAllrdv({'debut':this.formulaire.value['date_visite'], 'fin':this.formulaire.value['date_visite'], 'personnel_id': this.slugPersonnel}).subscribe((data)=>{
       this.rdvs = data;
     });
   }
@@ -329,8 +379,5 @@ export class ConsultationCreateComponent {
    // this.changeContent();
   }
 
-  done(): void {
-    console.log('done');
-  }
 
 }

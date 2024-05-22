@@ -3,15 +3,23 @@
     <div class="shadow-none p-1 mb-1 rounded" style="border: 1px solid lightgray;background:white;" >
       <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Liste des examens</h4>
       <div class="row" style="margin: 1%">
-        <div class="col-md-4">
-          <form #f="ngForm">
-            <input ngModel (change)="getRecherche({'content': slugSelect, 'date_jour': f.value.date_jour})" type="date" name="date_jour" class="form-control">
+        <div class="col-md-8">
+          <form [formGroup]="formulaires">
+            <div class="row">
+              <div class="col-md-6">
+                <input ngModel (change)="getRecherche()" type="date" formControlName="date_jour" class="form-control">
+              </div>
+              <div class="col-md-6" *ngIf="role == 'ADMIN' || role == 'USER_HOPITAL'">
+                <select (change)="getRecherche()" formControlName="content" id="content" class="form-control form-select">
+                  <option value="">choisir un medecin</option>
+                  <option *ngFor="let personnel of personnels" value="{{personnel?.slug}}">Dr {{personnel.nom }} {{personnel.prenom }}</option>
+                </select>
+              </div>
+            </div>
           </form>
         </div>
-        <div class="col-md-4">
-        </div>
         <div class="col-md-4" style="text-align: right">
-          <a routerLink="/examen/create">
+          <a (click)="openCreateExamen()">
             <button type="reset" class="btn-sm rounded"  style="color:white;border: none;background: black;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;margin-right: 1%;margin-left: 1%">
               Nouvel examen
             </button>
@@ -45,7 +53,7 @@
                   <p>{{examen?.type}}</p>
                 </div>
                 <div class="col-md-3">
-                  <p>{{examen?.resultat.substring(0,15)}}</p>
+                  <p>{{examen?.resultat?.substring(0,15)}}</p>
                 </div>
                 <div class="col-md-3">
                   <div class="row">
@@ -55,7 +63,7 @@
                       </a>
                     </div>
                     <div class="col-md-4">
-                      <a routerLink="/examen/edite/{{examen?.slug}}">
+                      <a (click)="openEditeExamen(examen)">
                         <button class="btn btn-primary" ><span nz-icon nzType="edit" nzTheme="outline" ></span></button>
                       </a>
                     </div>
@@ -74,3 +82,5 @@
     </div>
   </div>
 </div>
+<app-examen-create></app-examen-create>
+<app-examen-edite></app-examen-edite>

@@ -111,7 +111,7 @@ export class OrdonnanceEditeComponent {
 
 
   getOneConsultation(patient_id: any){
-    this.consultationService.rechercheConsultationExamenNone({'patient_id': patient_id}).subscribe((data:any)=>{
+    this.consultationService.rechercheConsultationExamenNone({content: patient_id}).subscribe((data:any)=>{
       this.oneConsultation = data;
     })
   }

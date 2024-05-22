@@ -40,9 +40,15 @@ export class RendvShowComponent {
   slugSelect ='';
   id_slug ='';
 
-  constructor(private rdvService: RdvService, private fb: FormBuilder, private router:Router, private personnelService: PersonnelService,
-              public connexionService:ConnexionService, private modal: NzModalService, private activiteService:ServiceService,
-              private activateRoute: ActivatedRoute,
+  constructor(
+    private rdvService: RdvService,
+    private fb: FormBuilder,
+    private router:Router,
+    private personnelService: PersonnelService,
+    public connexionService:ConnexionService,
+    private modal: NzModalService,
+    private activiteService:ServiceService,
+    private activateRoute: ActivatedRoute,
   ) {
   }
 
@@ -53,8 +59,6 @@ export class RendvShowComponent {
 
 
   getSlug(){
-    this.connexionService.getUser();
-    console.log(this.connexionService.userInfo)
     if(this.connexionService?.userInfo?.hopital?.length>0 || this.connexionService?.userInfo?.personnel?.length>0){
       if(this.connexionService.userInfo.role=="USER_HOPITAL"){
         this.slugHopital =this.connexionService?.userInfo?.hopital[0].slug;
@@ -103,6 +107,7 @@ export class RendvShowComponent {
 
   annnulerRdv(id:any){
     this.rdvService.deletePatientRdv(id).subscribe((data:any)=>{
+      this.delete(id);
       this.router.navigate(['/rendv/mesRdv']);
     });
   }
@@ -110,7 +115,13 @@ export class RendvShowComponent {
   deplacerRdv(form: any,id:any){
     this.rdvService.updaterRvPateint(form,id).subscribe((data:any)=>{
       this.rdvs = data;
+      this.delete(id);
       this.router.navigate(['/rendv/priseRdv']);
+    });
+  }
+
+  delete(id:any){
+    this.rdvService.deletePatientRdv(id).subscribe((data)=>{
     });
   }
 

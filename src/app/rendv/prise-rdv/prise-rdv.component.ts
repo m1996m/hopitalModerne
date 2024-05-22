@@ -7,6 +7,8 @@ import {ConnexionService} from "../../shared/services/authService/connextion/con
 import {NzModalService} from "ng-zorro-antd/modal";
 import {RdvModel} from "../../core/models/rdv.model";
 import {ServiceService} from "../../shared/services/web-services/service/service.service";
+import {HopitalService} from "../../shared/services/web-services/hopital/hopital.service";
+import {HopitalReponseDto} from "../../shared/services/web-services/hopital/dto/hopital-reponse.dto";
 
 @Component({
   selector: 'app-prise-rdv',
@@ -39,15 +41,48 @@ export class PriseRdvComponent {
     padding: '20px' // Exemple : définir le padding
   };
   slugPatient: any;
+  hopitals: HopitalReponseDto = [];
 
-  constructor(private rdvService: RdvService, private fb: FormBuilder, private router:Router, private personnelService: PersonnelService,
-              private connexionService:ConnexionService, private modal: NzModalService, private activiteService:ServiceService
+  constructor(
+    private rdvService: RdvService,
+    private fb: FormBuilder,
+    private router: Router,
+    private personnelService: PersonnelService,
+    private connexionService: ConnexionService,
+    private modal: NzModalService,
+    private activiteService: ServiceService,
+    private hopitalServie: HopitalService
   ) {
   }
 
   ngOnInit():void{
-    this.connexionService.getUser();
-    console.log(this.connexionService.userInfo);
+    this.getData();
+    this.initForm();
+    this.generateWeekDays();
+    this.dateJour = this.currentStartDate.toLocaleString().substring(6,10)+'-'+this.currentStartDate.toLocaleString().substring(3,5)+'-02';
+    this.debut = this.days[0]?.date.toLocaleString().substring(6,10)+'-'+this.days[0]?.date.toLocaleString().substring(3,5)+'-'+this.days[0]?.date.toLocaleString().substring(0,2);
+    this.fin = this.days[this.days.length-1]?.date.toLocaleString().substring(6,10)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(3,5)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(0,2);
+    this.getPersonnel({'content':this.slugHopital});
+    this.getRendezvous({'debut':this.debut,'fin':this.fin, 'personnel_id': this.slugPersonnel});
+    this.getHopital();
+    this.getService();
+  }
+
+  initForm(){
+    this.formulaire = this.fb.group({
+      personnel: [''],
+      service: [''],
+      hopital: [''],
+    });
+  }
+
+  getHopital(){
+    this.hopitalServie.recherche({"content":this.connexionService.userInfo?.pays}).subscribe((data)=>{
+      this.hopitals =data;
+    });
+  }
+
+  getData(){
     if(this.connexionService?.userInfo?.hopital?.length>0 || this.connexionService?.userInfo?.personnel?.length>0){
       if(this.connexionService.userInfo.role=="USER_HOPITAL"){
         this.slugHopital =this.connexionService?.userInfo?.hopital[0]?.slug;
@@ -70,29 +105,22 @@ export class PriseRdvComponent {
     if(this.connexionService.userInfo.role=="USER_PATIENT"){
       this.slugPatient = this.connexionService.userInfo?.patient[0]?.slug;
     }
-    this.generateWeekDays();
-    this.dateJour = this.currentStartDate.toLocaleString().substring(6,10)+'-'+this.currentStartDate.toLocaleString().substring(3,5)+'-02';
-    this.debut = this.days[0]?.date.toLocaleString().substring(6,10)+'-'+this.days[0]?.date.toLocaleString().substring(3,5)+'-'+this.days[0]?.date.toLocaleString().substring(0,2);
-    this.fin = this.days[this.days.length-1]?.date.toLocaleString().substring(6,10)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(3,5)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(0,2);
-    this.getPersonnel({'content':this.slugHopital});
-    this.getRendezvous({'content':this.debut,'fin':this.fin, 'personnel_id':this.slugPersonnel});
-    this.getService();
   }
 
   getService(){
-    this.activiteService.getAllservice({"content":this.slugHopital}).subscribe((data:any)=>{
+    this.activiteService.getAllservice({"content": this.formulaire.value['hopital']}).subscribe((data)=>{
       this.services = data;
     });
   }
 
-  recherchePersonnel(form: any){
-    this.personnelService.recherche(form).subscribe((data:any)=>{
+  recherchePersonnel(){
+    this.personnelService.findAllByService(this.formulaire.value['service']).subscribe((data:any)=>{
       this.personnels = data;
     });
   }
 
-  engegister(form:any){
-    this.getRendezvous({'content':this.debut, 'fin':this.fin, 'personnel_id':form.value['content']});
+  engegister(){
+    this.getRendezvous({'debut':this.debut, 'fin':this.fin, 'personnel_id': this.formulaire.value['personnel']});
   }
 
   showModal1(): void {
@@ -100,6 +128,12 @@ export class PriseRdvComponent {
   }
   handleCancel(): void {
     this.isVisible = false;
+  }
+
+  verificationValue(){
+    if (this.formulaire.value['hopital'].length > 3 && this.formulaire.value['personnel'].length > 3 && this.formulaire.value['service'].length > 3){
+      this.isVisible = false;
+    }
   }
 
   getPersonnel(form: any){
@@ -129,8 +163,8 @@ export class PriseRdvComponent {
   }
 
   selectionRdv(data:any){
-    this.rdvPatient.push({personnel_id:data.personnel_id, rdv_id:data.slug,statut:"Validé", patient_id: this.slugPatient});
-    this.rdvService.createRdvPatient(this.rdvPatient[0]).subscribe((data:any)=>{
+    this.rdvPatient.push({personnel_id: data.personnel_id, rdv_id: data.slug, statut:"Validé", patient_id: this.slugPatient});
+    this.rdvService.createRdvPatient(this.rdvPatient[0]).subscribe((data)=>{
       this.router.navigate(['/rendv/mesRdv']);
     });
   }
@@ -193,7 +227,7 @@ export class PriseRdvComponent {
     this.generateWeekDays();
     this.debut = this.days[0]?.date.toLocaleString().substring(6,10)+'-'+this.days[0]?.date.toLocaleString().substring(3,5)+'-'+this.days[0]?.date.toLocaleString().substring(0,2);
     this.fin = this.days[this.days.length-1]?.date.toLocaleString().substring(6,10)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(3,5)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(0,2);
-    this.getRendezvous({'content':this.debut,'fin':this.fin, 'personnel_id':this.slugPersonnel});
+    this.getRendezvous({'debut':this.debut,'fin':this.fin, 'personnel_id': this.formulaire.value['personnel']});
   }
 
   previousWeek(): void {
@@ -201,6 +235,6 @@ export class PriseRdvComponent {
     this.generateWeekDays();
     this.debut = this.days[0]?.date.toLocaleString().substring(6,10)+'-'+this.days[0]?.date.toLocaleString().substring(3,5)+'-'+this.days[0]?.date.toLocaleString().substring(0,2);
     this.fin = this.days[this.days.length-1]?.date.toLocaleString().substring(6,10)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(3,5)+'-'+this.days[this.days.length-1]?.date.toLocaleString().substring(0,2);
-    this.getRendezvous({'content':this.debut,'fin':this.fin, 'personnel_id':this.slugPersonnel});
+    this.getRendezvous({'debut':this.debut,'fin':this.fin, 'personnel_id': this.formulaire.value['personnel']});
   }
 }

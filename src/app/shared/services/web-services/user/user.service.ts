@@ -29,9 +29,7 @@ export class UserService {
 
 
   createUser(user: FormGroup){
-
     return this.httpHelper.request<any>('POST', `${this.routePrefix}/create`, user);
-
   }
 
   updateUser(user: FormGroup, id: string){
@@ -46,8 +44,8 @@ export class UserService {
 
   }
 
-  getOneUser(id: number){
-    return this.httpHelper.request<UserEntity>('GET', `${this.routePrefix}/`+id);
+  getOneUser(slug: string){
+    return this.httpHelper.request<UserEntity>('GET', `${this.routePrefix}/`+slug);
   }
 
   getUserType(type: string){

@@ -36,6 +36,10 @@ export class PersonnelService {
     return this.httpHelper.request<PersonnelResponseDto[]>('GET',this.routePrefix+'/recherche', null,{content: content});
   }
 
+  findAllByService(content: string){
+    return this.httpHelper.request<PersonnelResponseDto[]>('GET',this.routePrefix+'/service/personnel', null,{service: content});
+  }
+
   updatepersonnel(personnel: FormGroup, id: string){
     return this.httpHelper.request<any>('PATCH',this.routePrefix+'/'+id, personnel);
   }

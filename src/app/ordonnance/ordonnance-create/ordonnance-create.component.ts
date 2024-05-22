@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-import {ExamenModel} from "../../core/models/examen.model";
 import {HopitalService} from "../../shared/services/web-services/hopital/hopital.service";
 import {FormBuilder} from "@angular/forms";
 import {ConsultationService} from "../../shared/services/web-services/consultation/consultation.service";
 import {Router} from "@angular/router";
 import {ConnexionService} from "../../shared/services/authService/connextion/connexion.service";
-import {ExamenService} from "../../shared/services/web-services/examen/examen.service";
 import {PatientService} from "../../shared/services/web-services/patient/patient.service";
 import {OrdonnanceModel} from "../../core/models/ordonnance.model";
 import {OrdonnanceService} from "../../shared/services/web-services/ordonnance/ordonnance.service";
@@ -117,7 +115,7 @@ export class OrdonnanceCreateComponent {
 
 
   getOneConsultation(patient_id: any){
-    this.consultationService.rechercheConsultationExamenNone({'patient_id': patient_id}).subscribe((data:any)=>{
+    this.consultationService.rechercheConsultationExamenNone({content: patient_id}).subscribe((data:any)=>{
       this.oneConsultation = data;
       console.log("data")
     });

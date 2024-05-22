@@ -133,7 +133,6 @@ export class PersonnelShowComponent {
   getOneService(id: string){
     this.serviceService.getOneservice(id).subscribe((data)=>{
       this.oneService = data;
-      console.log(data)
     })
   }
 

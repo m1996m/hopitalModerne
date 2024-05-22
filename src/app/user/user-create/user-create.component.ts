@@ -26,7 +26,12 @@ export class UserCreateComponent {
     padding: '20px' // Exemple : définir le padding
   };
 
-  constructor(private userService:UserService, private fb: FormBuilder,private modal: NzModalService, private router: Router) {
+  constructor(
+    private userService:UserService,
+    private fb: FormBuilder,
+    private modal: NzModalService,
+    private router: Router
+  ) {
     encapsulation: ViewEncapsulation.None
   }
 

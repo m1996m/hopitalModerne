@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
 import {HopitalService} from "../../shared/services/web-services/hopital/hopital.service";
-import {FormBuilder} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {ConsultationService} from "../../shared/services/web-services/consultation/consultation.service";
 import {Router} from "@angular/router";
 import {ConnexionService} from "../../shared/services/authService/connextion/connexion.service";
 import {ExamenModel} from "../../core/models/examen.model";
 import {ExamenService} from "../../shared/services/web-services/examen/examen.service";
 import {PatientService} from "../../shared/services/web-services/patient/patient.service";
+import {RdvResponseDto} from "../../shared/services/web-services/rdv/dto/rdv-response.dto";
+import {ConsultationDto} from "../../shared/services/web-services/consultation/dto/consultation.dto";
+import {PatientEntity} from "../../core/entities/patient.entity";
+import {ConsultationEntity} from "../../core/entities/consultation.entity";
+import {UserEntity} from "../../core/entities/user.entity";
+import {UserService} from "../../shared/services/web-services/user/user.service";
 
 @Component({
   selector: 'app-examen-create',
@@ -15,27 +21,38 @@ import {PatientService} from "../../shared/services/web-services/patient/patient
 })
 export class ExamenCreateComponent {
 
-  formulaire: any;
+  formulaire!: FormGroup;
   examen: ExamenModel = new ExamenModel('','','','','','','','','','','')
   slugHopital='';
-  rdvs: any;
-  slugPersonnel: any;
-  slugSelect: any;
-  consultations: any;
-  dateJour: any;
+  rdvs: RdvResponseDto = [];
+  slugPersonnel = '';
+  slugSelect = '';
+  consultations: ConsultationDto = [];
+  dateJour = '';
   currentStartDate = new Date();
   resultats='';
   resultatsT = Array<{data: any}>();
   donnees: any;
   inputValue = "";
   isResultat = false;
-  onePatient: any;
-  oneConsultation: any;
+  onePatient!: PatientEntity;
+  oneConsultation!: ConsultationEntity ;
+  yourCustomStyles = {
+    height: '500px', // Exemple : définir la hauteur
+    padding: '20px' // Exemple : définir le padding
+  };
+  isVisible = false;
+  oneUser!: UserEntity;
 
-  constructor(private hopitalServie:HopitalService, private fb: FormBuilder, private consultationService: ConsultationService,
-              private route: Router, private connexionService: ConnexionService, private examenService: ExamenService,
-              private patientService: PatientService,
-
+  constructor(
+    private hopitalServie:HopitalService,
+    private fb: FormBuilder,
+    private consultationService: ConsultationService,
+    private route: Router,
+    public connexionService: ConnexionService,
+    private examenService: ExamenService,
+    private patientService: PatientService,
+    private  userService: UserService
   ) {
   }
 
@@ -59,10 +76,26 @@ export class ExamenCreateComponent {
     });
   }
 
-  getSlug(){
+  validateChampsFormulaire(): boolean {
+    return this.formulaire.get('patient_id')?.value &&
+      this.formulaire.get('date_jour')?.value &&
+      this.formulaire.get('type')?.value &&
+      this.formulaire.get('cout')?.value &&
+      this.formulaire.get('consultation_id')?.value;
+  }
+
+  showModal(): void {
+    this.isVisible = true;
+    this.consultationService.notifyModalState(this.isVisible);
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+    this.consultationService.notifyModalState(this.isVisible);
+  }
+
+  getData(){
     this.dateJour = this.currentStartDate.toLocaleString().substring(6,10)+'-'+this.currentStartDate.toLocaleString().substring(3,5)+'-'+this.currentStartDate.toLocaleString().substring(0,2);
-    console.log(this.dateJour);
-    this.connexionService.getUser();
     if(this.connexionService?.userInfo?.hopital?.length>0 || this.connexionService?.userInfo?.personnel?.length>0){
       if(this.connexionService.userInfo.role=="USER_HOPITAL"){
         this.slugHopital =this.connexionService?.userInfo?.hopital[0].slug;
@@ -94,7 +127,7 @@ export class ExamenCreateComponent {
       if(data == "resultat"){
         this.resultatsT.push({data: this.formulaire.value['resultat']}) ;
       }
-      this.formulaire.get(data).reset();
+      this.formulaire.get(data)?.reset();
     }
   }
 
@@ -133,10 +166,10 @@ export class ExamenCreateComponent {
     }
   }
 
-  getOneConsultation(patient_id: any){
-    this.consultationService.rechercheConsultationExamenNone({'patient_id': patient_id}).subscribe((data:any)=>{
-      this.oneConsultation = data;
-      console.log(data)
+  getOneUserByEmail(){
+    this.userService.getEmailOneUsser(this.formulaire?.value['patient_id']).subscribe((data)=>{
+      this.oneUser = data;
+      this.getOnePatient();
     })
   }
 
@@ -147,14 +180,13 @@ export class ExamenCreateComponent {
   }
 
   getOnePatient(){
-    this.patientService.getOnepatient(this.formulaire.value['patient_id']).subscribe((data:any)=>{
+    this.patientService.getOnepatient(this.oneUser.patient[0]?.slug).subscribe((data:any)=>{
       this.onePatient = data;
-      this.getOneConsultation(data?.patient_id);
     });
   }
 
   chargeFonction(){
-    this.getSlug();
+    this.getData();
   }
 
   enregistrer(){
@@ -170,7 +202,7 @@ export class ExamenCreateComponent {
     });
     this.resultats = '';
     this.examenService.createexamen(this.formulaire.value).subscribe((data:any)=>{
-      this.route.navigate(['/examen']);
+      this.handleCancel();
     });
   }
 

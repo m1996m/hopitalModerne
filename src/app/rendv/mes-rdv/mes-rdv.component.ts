@@ -26,9 +26,9 @@ export class MesRdvComponent {
   rdvPatient = Array<{personnel_id: any,rdv_id: string, statut: string, patient_id: string}>();
   days=Array <{ jour: any,date:any } >();
   weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-  appointments:any;
+  appointments: any;
   debut: any;
-  fin:any
+  fin: any;
   //Validé, Annulé,
   isVisible=false;
   services:any;
@@ -38,6 +38,7 @@ export class MesRdvComponent {
     padding: '20px' // Exemple : définir le padding
   };
   slugSelect ='';
+  slugPatient = '';
 
   constructor(private rdvService: RdvService, private fb: FormBuilder, private router:Router, private personnelService: PersonnelService,
               private connexionService:ConnexionService, private modal: NzModalService, private activiteService:ServiceService,
@@ -55,8 +56,7 @@ export class MesRdvComponent {
     });
   }
 
-  getSlug(){
-    this.connexionService.getUser();
+  getData(){
     if(this.connexionService?.userInfo?.hopital?.length>0 || this.connexionService?.userInfo?.personnel?.length>0){
       if(this.connexionService.userInfo.role=="USER_HOPITAL"){
         this.slugHopital =this.connexionService?.userInfo?.hopital[0].slug;
@@ -81,6 +81,9 @@ export class MesRdvComponent {
     }else if(this.connexionService.userInfo.role=="USER_PATIENT"){
       this.slugSelect = this.connexionService.userInfo.patient[0].slug;
     }
+    if(this.connexionService.userInfo.role=="USER_PATIENT"){
+      this.slugPatient = this.connexionService.userInfo?.patient[0]?.slug;
+    }
   }
 
   recherchePersonnel(form: any){
@@ -90,7 +93,7 @@ export class MesRdvComponent {
   }
 
   chargeDateFormate(){
-    this.getSlug();
+    this.getData();
     this.generateWeekDays();
     this.getPersonnel({'content':this.slugHopital});
     this.getService();
@@ -101,7 +104,7 @@ export class MesRdvComponent {
   }
 
   engegister(form:any){
-    this.getRendezvous({'content':this.debut, 'fin':this.fin, 'personnel_id':form.value['content']});
+    this.getRendezvous(this.slugSelect);
   }
 
   showModal1(): void {
@@ -126,13 +129,13 @@ export class MesRdvComponent {
   }
 
   getRendezvous(form: any){
-    this.rdvService.rdvPatient(form).subscribe((data:any)=>{
+    this.rdvService.rdvPatient(form).subscribe((data)=>{
       this.rdvs = data;
     });
   }
 
   delete(id:any){
-    this.rdvService.deletePatientRdv(id).subscribe((data:any)=>{
+    this.rdvService.deletePatientRdv(id).subscribe((data)=>{
       this.getRendezvous(this.slugSelect);
     });
   }
@@ -145,9 +148,9 @@ export class MesRdvComponent {
 
   selectionRdv(data:any){
     this.rdvPatient.push({personnel_id: data.personnel_id, rdv_id: data.slug,statut: "Valide", patient_id: this.slugPersonnel});
-    this.rdvService.createRdvPatient(this.rdvPatient[0]).subscribe((data:any)=>{});
-    //this.updateRdvPatient(this.rdvPatient[0],data?.id);
+    this.rdvService.createRdvPatient(this.rdvPatient[0]).subscribe((data)=>{});
   }
+
   //Confirmation suppression
   showDeleteConfirm(id:any): void {
     this.modal.confirm({

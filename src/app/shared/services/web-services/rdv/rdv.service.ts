@@ -29,11 +29,11 @@ export class RdvService {
   }
 
   createRdvPatient(rdv: any){
-    return this.httpHelper.request<any>('POST', this.routePrefix+'patient/rdv', rdv);
+    return this.httpHelper.request<any>('POST', this.routePrefix+'/patient/rdv', rdv);
   }
 
   updaterRvPateint(rdv: FormGroup, id: number){
-    return this.httpHelper.request<any>('PATCH', this.routePrefix+'modification/rdv/pateint/'+id, rdv);
+    return this.httpHelper.request<any>('PATCH', this.routePrefix+'/modification/rdv/pateint/' +id, rdv);
   }
 
   updaterdv(rdv: FormGroup, slug: string){
@@ -53,7 +53,7 @@ export class RdvService {
   }
 
   rdvPatient(slug: string){
-    return this.httpHelper.request<RdvResponseDto>('GET', this.routePrefix+'/mesRdv'+ {slug: slug});
+    return this.httpHelper.request<any>('GET', this.routePrefix+'/liste/mesRdv', null, {slug: slug});
   }
 
   delete(slug: string){

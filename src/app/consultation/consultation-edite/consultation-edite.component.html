@@ -1,226 +1,238 @@
-<nz-steps [nzCurrent]="current">
-  <nz-step nzTitle="Informations du patient"></nz-step>
-  <nz-step nzTitle="Dianostique"></nz-step>
-  <nz-step nzTitle="Conclusion"></nz-step>
-  <nz-step nzTitle="Validation"></nz-step>
-</nz-steps>
-
-<div class="row" style="margin: 1%;">
-  <div class="col-md-12" style="margin-right: 1%;margin-left: 1%">
-    <nz-card style="width:100%;" >
-      <div class="row">
-        <div class="col-md-12">
-          <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Ajout consultation</h4>
-        </div>
-      </div>
-      <div class="col-md-12" >
-        <form [formGroup]="formulaire">
-          <div class="row" *ngIf=" current==0 ">
-            <div class="col-md-6">
-              <label for="date_visite">Date visite</label>
-              <input style="text-align: left" type="date" id="date_visite" class="form-control" formControlName="date_visite">
-
-              <label for="rdv">Rendez-vous</label>
-              <select formControlName="rdv_id" id="rdv" class="form-control form-select">
-                <option value="">Choisir un rendez-vous</option>
-                <option *ngFor="let rdv of rdvs" value="{{rdv?.slug}}">{{rdv?.date_jour | date: 'dd/MM/yyyy'}} à {{rdv?.plage}}</option>
-              </select>
-
-              <label for="patient">Patient</label>
-              <select formControlName="patient_id" id="patient" class="form-control form-select">
-                <option value="">Choisir un patient</option>
-                <option *ngFor="let patient of patients" value="{{patient?.slug}}">{{patient?.nom}} {{patient?.prenom}}</option>
-              </select>
-
-            </div>
-            <div class="col-md-6">
-
-              <label for="taille">Taille</label>
-              <input type="text" id="taille" class="form-control" formControlName="taille">
-
-              <label for="poids">Poids</label>
-              <input type="text" id="poids" class="form-control" formControlName="poids">
-
-              <label for="situation">Situation matrimoniale</label>
-              <input type="text" id="situation" class="form-control" formControlName="situation">
-
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Ajout Consultation" (nzOnCancel)="handleCancel()" [nzWidth]="900" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <nz-steps [nzCurrent]="current">
+      <nz-step nzTitle="Informations du patient"></nz-step>
+      <nz-step nzTitle="Dianostique"></nz-step>
+      <nz-step nzTitle="Conclusion"></nz-step>
+      <nz-step nzTitle="Validation"></nz-step>
+    </nz-steps>
+    <div class="row" style="margin: 1%;">
+      <div class="col-md-12" style="margin-right: 1%;margin-left: 1%">
+        <nz-card style="width:100%;" >
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="rounded-2" style="text-align: center;background: #1423DC;color:white;padding: 1.5%">Modification consultation</h4>
             </div>
           </div>
+          <div class="col-md-12" >
+            <form [formGroup]="formulaire">
+              <div class="row" *ngIf=" current == 0 ">
+                <div class="col-md-6">
+                  <label for="date_visite">Date visite <span style="color: red " title="champ obligatoire">*</span></label>
+                  <input (change)="getRdv()" (change)="verificationPatient()" style="text-align: left" type="date" id="date_visite" class="form-control" formControlName="date_visite">
 
-          <div class="row" *ngIf=" current==1 ">
-            <div class="col-md-6"  *ngIf="isInput">
-              <div class="card">
-                <div class="row">
-                  <div class="col-md-6" style="text-align: center">
-                    <h4>{{inputValue}}</h4>
-                  </div>
-                  <div class="col-md-6" style="text-align: center">
-                    <h4>Actions</h4>
-                  </div>
+                  <label for="rdv">Rendez-vous <span style="color: red " title="champ obligatoire">*</span></label>
+                  <select (change)="verificationPatient()" formControlName="rdv_id" id="rdv" class="form-control form-select">
+                    <option value="">Choisir un rendez-vous</option>
+                    <option *ngFor="let rdv of rdvs" value="{{rdv?.slug}}">{{rdv?.date_jour | date: 'dd/MM/yyyy'}} à {{rdv?.plage}}</option>
+                  </select>
+
+                  <label for="patient">Patient <span style="color: red " title="champ obligatoire">*</span></label>
+                  <select (change)="verificationPatient()" formControlName="patient_id" id="patient" class="form-control form-select">
+                    <option value="">Choisir un patient</option>
+                    <option *ngFor="let patient of patients" value="{{patient?.slug}}">{{patient?.nom}} {{patient?.prenom}}</option>
+                  </select>
+
+                </div>
+                <div class="col-md-6">
+
+                  <label for="taille">Taille <span style="color: red " title="champ obligatoire">*</span></label>
+                  <input (keyup)="verificationPatient()" type="text" id="taille" class="form-control" formControlName="taille">
+
+                  <label for="poids">Poids <span style="color: red " title="champ obligatoire">*</span></label>
+                  <input (keyup)="verificationPatient()" type="text" id="poids" class="form-control" formControlName="poids">
+
+                  <label for="situation">Situation matrimoniale <span style="color: red " title="champ obligatoire">*</span></label>
+                  <select (change)="verificationPatient()" formControlName="situation" id="situation" class="form-control form-select">
+                    <option value="">Choisir votre réponse</option>
+                    <option value="Marié(e)">Marié(e)</option>
+                    <option value="Célibataire">Célibataire</option>
+                    <option value="Divorcé(e)">Divorcé(e)</option>
+                    <option value="Veuf(ve)">Veuf(ve)</option>
+                  </select>
                 </div>
               </div>
-              <cdk-virtual-scroll-viewport  style="height: 200px;margin-right: 1%;margin-left: 1%;color: black" [itemSize]="90" >
-                <button class="btn btn-danger " (click)="cancel()" style="margin-top: 1%">
-                  <span  >Fermer</span>
-                </button>
-                <div class="row" *ngFor="let data of donnees; let i = index" style="margin-top: 1%;">
-                  <div class="col-md-6" style="text-align: center" >
-                    <span style="font-size: 15px">{{data.data}}</span>
+
+              <div class="row" *ngIf=" current==1 ">
+                <div class="col-md-6"  *ngIf="isInput">
+                  <div class="card">
+                    <div class="row">
+                      <div class="col-md-6" style="text-align: center">
+                        <h4>{{inputValue}}</h4>
+                      </div>
+                      <div class="col-md-6" style="text-align: center">
+                        <h4>Actions</h4>
+                      </div>
+                    </div>
                   </div>
-                  <div class="col-md-6" style="text-align: center">
-                    <button class="btn btn-danger " (click)="deleteTable(inputValue,i)" >
-                      <span nz-icon nzType="delete" nzTheme="outline" ></span>
+                  <cdk-virtual-scroll-viewport  style="height: 200px;margin-right: 1%;margin-left: 1%;color: black" [itemSize]="90" >
+                    <button class="btn btn-danger " (click)="cancel()" style="margin-top: 1%">
+                      <span  >Fermer</span>
                     </button>
-                  </div>
+                    <div class="row" *ngFor="let data of donnees; let i = index" style="margin-top: 1%;">
+                      <div class="col-md-6" style="text-align: center" >
+                        <span style="font-size: 15px">{{data.data}}</span>
+                      </div>
+                      <div class="col-md-6" style="text-align: center">
+                        <button class="btn btn-danger " (click)="deleteTable(inputValue,i)" >
+                          <span nz-icon nzType="delete" nzTheme="outline" ></span>
+                        </button>
+                      </div>
+                    </div>
+                  </cdk-virtual-scroll-viewport>
                 </div>
-              </cdk-virtual-scroll-viewport>
-            </div>
-            <div class="col-md-6" *ngIf="!isInput">
+                <div class="col-md-6" *ngIf="!isInput">
 
-              <label for="fumeur">Fumeur</label>
-              <select id="fumeur" class="form-control form-select" formControlName="fumeur">
-                <option value="">Choisir votre réponse</option>
-                <option value="Oui">Oui</option>
-                <option value="Non">Non</option>
-              </select>
+                  <label for="fumeur">Fumeur <span style="color: red " title="champ obligatoire">*</span></label>
+                  <select (change)="verificationDiagnotic()" id="fumeur" class="form-control form-select" formControlName="fumeur">
+                    <option value="">Choisir votre réponse</option>
+                    <option value="Oui">Oui</option>
+                    <option value="Non">Non</option>
+                  </select>
 
-              <label for="buveur">Buveur(alcool)</label>
-              <select id="buveur" class="form-control" formControlName="buveur">
-                <option value="">Choisir votre réponse</option>
-                <option value="Oui">Oui</option>
-                <option value="Non">Non</option>
-              </select>
+                  <label for="buveur">Buveur(alcool) <span style="color: red " title="champ obligatoire">*</span></label>
+                  <select (change)="verificationDiagnotic()" id="buveur" class="form-control form-select" formControlName="buveur">
+                    <option value="">Choisir votre réponse</option>
+                    <option value="Oui">Oui</option>
+                    <option value="Non">Non</option>
+                  </select>
 
-              <label for="cout">Coût</label>
-              <input type="text" id="cout" class="form-control" formControlName="cout">
-            </div>
-            <div class="col-md-6">
-              <label for="plainte">Plainte</label>
-              <div class="row">
-                <div class="col-md-9">
-                  <input (focusin)="verificationValeur('plainte')" type="text" id="plainte" class="form-control" formControlName="plainte">
+                  <label for="cout">Coût <span style="color: red " title="champ obligatoire">*</span></label>
+                  <input (blur)="verificationDiagnotic()" (keyup)="verificationDiagnotic()" type="text" id="cout" class="form-control" formControlName="cout">
                 </div>
-                <div class="col-md-3" style="text-align: left">
-                  <button (click)="chargeTable('plainte')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
-                    <span>Ajouter</span>
-                  </button>
-                </div>
-              </div>
-
-              <label for="allergie">Allergie</label>
-              <div class="row">
-                <div class="col-md-9">
-                  <input (focusin)="verificationValeur('allergie')" type="text" id="allergie" class="form-control" formControlName="allergie">
-                </div>
-                <div class="col-md-3" style="text-align: left">
-                  <button (click)="chargeTable('allergie')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
-                    <span>Ajouter</span>
-                  </button>
-                </div>
-              </div>
-
-              <label for="precedent">Antécédant</label>
-              <div class="row">
-                <div class="col-md-9">
-                  <input (focusin)="verificationValeur('precedent')" type="text" id="precedent" class="form-control" formControlName="precedent">
-                </div>
-                <div class="col-md-3" style="text-align: left">
-                  <button (click)="chargeTable('precedent')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
-                    <span>Ajouter</span>
-                  </button>
-                </div>
-              </div>
-
-              <label for="autre">Autre</label>
-              <div class="row">
-                <div class="col-md-9">
-                  <input (focusin)="verificationValeur('autre')" type="text" id="autre" class="form-control" formControlName="autre">
-                </div>
-                <div class="col-md-3" style="text-align: left">
-                  <button (click)="chargeTable('autre')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
-                    <span>Ajouter</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="row" *ngIf=" current==2 ">
-            <div class="col-md-6">
-              <label for="examens">Examens à faire</label>
-              <div class="row">
-                <div class="col-md-9">
-                  <input (focusin)="verificationValeur('examens')" type="text" id="examens" class="form-control" formControlName="examens">
-                </div>
-                <div class="col-md-3" style="text-align: left">
-                  <button (click)="chargeTable('examens')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
-                    <span>Ajouter</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label for="resultat">Résultat</label>
-              <div class="row">
-                <div class="col-md-9">
-                  <input (focusin)="verificationValeur('resultat')" type="text" id="resultat" class="form-control" formControlName="resultat">
-                </div>
-                <div class="col-md-3" style="text-align: left">
-                  <button  (click)="chargeTable('resultat')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
-                    <span>Ajouter</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-8 offset-md-2">
-                <div class="card" *ngIf="isResultat" style="margin-top: 2%">
+                <div class="col-md-6">
+                  <label for="plainte">Plainte</label>
                   <div class="row">
-                    <div class="col-md-6" style="text-align: center">
-                      <h4>{{inputValue}}</h4>
+                    <div class="col-md-9">
+                      <input (focusin)="verificationValeur('plainte')" type="text" id="plainte" class="form-control" formControlName="plainte">
                     </div>
-                    <div class="col-md-6" style="text-align: center">
-                      <h4>Actions</h4>
-                    </div>
-                  </div>
-                </div>
-                <cdk-virtual-scroll-viewport *ngIf="isResultat"  style="height: 320px;margin-right: 1%;margin-left: 1%;color: black" [itemSize]="90" >
-                  <button class="btn btn-danger " (click)="cancel()" style="margin-top: 1%">
-                    <span  >Fermer</span>
-                  </button>
-                  <div class="row" *ngFor="let data of donnees; let i = index" style="margin-top: 1%;">
-                    <div class="col-md-6" style="text-align: center" >
-                      <span style="font-size: 15px">{{data.data}}</span>
-                    </div>
-                    <div class="col-md-6" style="text-align: center">
-                      <button class="btn btn-danger " (click)="deleteTable(inputValue,i)" >
-                        <span nz-icon nzType="delete" nzTheme="outline" ></span>
+                    <div class="col-md-3" style="text-align: left">
+                      <button (click)="chargeTable('plainte')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                        <span>Ajouter</span>
                       </button>
                     </div>
                   </div>
-                </cdk-virtual-scroll-viewport>
-              </div>
-            </div>
-          </div>
 
-          <div class="row" *ngIf=" current==3 ">
-            <div class="col-md-6"></div>
-            <div class="col-md-6"></div>
+                  <label for="allergie">Allergie</label>
+                  <div class="row">
+                    <div class="col-md-9">
+                      <input (focusin)="verificationValeur('allergie')" type="text" id="allergie" class="form-control" formControlName="allergie">
+                    </div>
+                    <div class="col-md-3" style="text-align: left">
+                      <button (click)="chargeTable('allergie')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                        <span>Ajouter</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <label for="precedent">Antécédant</label>
+                  <div class="row">
+                    <div class="col-md-9">
+                      <input (focusin)="verificationValeur('precedent')" type="text" id="precedent" class="form-control" formControlName="precedent">
+                    </div>
+                    <div class="col-md-3" style="text-align: left">
+                      <button (click)="chargeTable('precedent')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                        <span>Ajouter</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <label for="autre">Autre</label>
+                  <div class="row">
+                    <div class="col-md-9">
+                      <input (focusin)="verificationValeur('autre')" type="text" id="autre" class="form-control" formControlName="autre">
+                    </div>
+                    <div class="col-md-3" style="text-align: left">
+                      <button (click)="chargeTable('autre')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                        <span>Ajouter</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" *ngIf=" current==2 ">
+                <div class="col-md-6">
+                  <label for="examens">Examens à faire</label>
+                  <div class="row">
+                    <div class="col-md-9">
+                      <input (focusin)="verificationValeur('examens')" type="text" id="examens" class="form-control" formControlName="examens">
+                    </div>
+                    <div class="col-md-3" style="text-align: left">
+                      <button (click)="chargeTable('examens')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                        <span>Ajouter</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="resultat">Résultat <span style="color: red " title="champ obligatoire">*</span></label>
+                  <div class="row">
+                    <div class="col-md-9">
+                      <input (change)="verificationConclusion()" (focusin)="verificationValeur('resultat')" type="text" id="resultat" class="form-control" formControlName="resultat">
+                    </div>
+                    <div class="col-md-3" style="text-align: left">
+                      <button  (click)="chargeTable('resultat')" class="rounded-2" type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px">
+                        <span>Ajouter</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-8 offset-md-2">
+                    <div class="card" *ngIf="isResultat" style="margin-top: 2%">
+                      <div class="row">
+                        <div class="col-md-6" style="text-align: center">
+                          <h4>{{inputValue}}</h4>
+                        </div>
+                        <div class="col-md-6" style="text-align: center">
+                          <h4>Actions</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <cdk-virtual-scroll-viewport *ngIf="isResultat"  style="height: 170px;margin-right: 1%;margin-left: 1%;color: black" [itemSize]="90" >
+                      <button class="btn btn-danger " (click)="cancel()" style="margin-top: 1%">
+                        <span  >Fermer</span>
+                      </button>
+                      <div class="row" *ngFor="let data of donnees; let i = index" style="margin-top: 1%;">
+                        <div class="col-md-6" style="text-align: center" >
+                          <span style="font-size: 15px">{{data.data}}</span>
+                        </div>
+                        <div class="col-md-6" style="text-align: center">
+                          <button class="btn btn-danger " (click)="deleteTable(inputValue,i)" >
+                            <span nz-icon nzType="delete" nzTheme="outline" ></span>
+                          </button>
+                        </div>
+                      </div>
+                    </cdk-virtual-scroll-viewport>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" *ngIf=" current==3 ">
+                <div class="col-md-6"></div>
+                <div class="col-md-6"></div>
+              </div>
+              <div class="steps-action" style="margin-top: 1%">
+                <button nz-button nzType="default" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%" (click)="pre()" *ngIf="current > 0">
+                  <span>Précedent</span>
+                </button>
+                <button  nz-button nzType="default" (click)="next()" *ngIf="(current === 0 && isPatient) ||
+                (current === 1 && isDiagnotic) || (current === 2) || (current === 0)" style="color:white;border: none;background: #1423DC;
+                        color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;
+                        padding-top: 8px;">
+                  <span>Suivant</span>
+                </button>
+                <button (click)="enregistrer()"  type="submit" nz-button nzType="primary" *ngIf="current === 3"
+                        style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;
+                        padding-right: 15px;padding-bottom: 8px;padding-top: 8px;">
+                  <span>Enregister</span>
+                </button>
+              </div>
+            </form>
           </div>
-          <div class="steps-action">
-            <button class="rounded-2" nz-button nzType="default" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%" (click)="pre()" *ngIf="current > 0">
-              <span>Précedent</span>
-            </button>
-            <button class="rounded-2" nz-button nzType="default" (click)="next()" *ngIf="current < 3" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%">
-              <span>Suivant</span>
-            </button>
-            <button class="rounded-2" (click)="enregistrer()"  type="submit" nz-button nzType="primary" (click)="done()" *ngIf="current === 3" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%">
-              <span>Enregister</span>
-            </button>
-          </div>
-        </form>
+        </nz-card>
       </div>
-    </nz-card>
+    </div>
   </div>
-</div>
+</nz-modal>

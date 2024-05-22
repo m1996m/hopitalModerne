@@ -61,7 +61,6 @@ export class PersonnelCreateComponent {
     if(this.connexionService?.userInfo?.hopital?.length>0){
       if(this.connexionService.userInfo.role=="USER_HOPITAL"){
         this.slugHopital = this.connexionService?.userInfo?.hopital[0].slug;
-        console.log(this.slugHopital)
       }
     }
   }

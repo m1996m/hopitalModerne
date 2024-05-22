@@ -27,9 +27,16 @@ export class ConsultationShowComponent {
   currentStartDate = new Date();
   id_slug:any;
 
-  constructor(private hopitalServie:HopitalService, private fb: FormBuilder,private activiteService: ServiceService,
-              private consultationService: ConsultationService, private route: Router, private connexionService: ConnexionService,
-              private patientService: PatientService, private activateRoute: ActivatedRoute, private personnelService: PersonnelService,
+  constructor(
+    private hopitalServie:HopitalService,
+    private fb: FormBuilder,
+    private activiteService: ServiceService,
+    private consultationService: ConsultationService,
+    private route: Router,
+    private connexionService: ConnexionService,
+    private patientService: PatientService,
+    private activateRoute: ActivatedRoute,
+    private personnelService: PersonnelService,
   ) {
   }
 

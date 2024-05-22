@@ -11,7 +11,7 @@
         <div class="col-md-4">
         </div>
         <div class="col-md-4" style="text-align: right">
-          <a routerLink="/consultation/create">
+          <a (click)="onpenConsultationCreate()">
             <button type="reset" class="btn-sm rounded"  style="color:white;border: none;background: black;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;text-align: right;margin-right: 1%;margin-left: 1%">
               Nouvelle consultation
             </button>
@@ -42,10 +42,10 @@
                   <p>{{consultation?.date_visite | date: 'dd/MM/yyyy'}}</p>
                 </div>
                 <div class="col-md-3">
-                  <p>{{consultation?.plainte.substring(0,15)}}</p>
+                  <p>{{consultation?.plainte?.substring(0,15)}}</p>
                 </div>
                 <div class="col-md-3">
-                  <p>{{consultation?.autre.substring(0,15)}}</p>
+                  <p>{{consultation?.autre?.substring(0,15)}}</p>
                 </div>
                 <div class="col-md-3">
                   <div class="row">
@@ -55,7 +55,7 @@
                       </a>
                     </div>
                     <div class="col-md-4">
-                      <a routerLink="/consultation/edite/{{consultation?.slug}}">
+                      <a (click)="onpenConsultationEdite(consultation)">
                         <button class="btn btn-primary" ><span nz-icon nzType="edit" nzTheme="outline" ></span></button>
                       </a>
                     </div>
@@ -75,3 +75,5 @@
     </div>
   </div>
 </div>
+<app-consultation-create></app-consultation-create>
+<app-consultation-edite></app-consultation-edite>

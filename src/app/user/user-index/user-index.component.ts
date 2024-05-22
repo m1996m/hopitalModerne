@@ -55,7 +55,6 @@ export class UserIndexComponent {
     this.userService.modalState$.subscribe((isVisible) => {
       this.getUsers();
     });
-
   }
 
   editer(id:any){
@@ -178,7 +177,7 @@ export class UserIndexComponent {
   }
 
   getOneUser(user: UserEntity){
-    this.userService.getOneUser(user?.id).subscribe((data:any)=>{
+    this.userService.getOneUser(user?.slug).subscribe((data:any)=>{
       this.oneUser = data;
       this.initFormUpdate();
     })

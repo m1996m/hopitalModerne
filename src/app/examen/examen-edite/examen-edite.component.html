@@ -1,4 +1,6 @@
-<div class="row" style="margin: 1%;">
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Modification Examen" (nzOnCancel)="handleCancel()" [nzWidth]="900" [nzBodyStyle]="yourCustomStyles">
+  <div *nzModalContent>
+    <div class="row" style="margin: 1%;">
   <div class="col-md-12" style="margin-right: 1%;margin-left: 1%">
     <nz-card style="width:100%;" >
       <div class="row">
@@ -23,12 +25,14 @@
               </select>
               <label for="patient_id">Choisir un patient</label>
               <input (blur)="getOnePatient()" type="text" id="patient_id" placeholder="E-mail du patient" formControlName="patient_id" class="form-control">
+              <label for="date_jour">Date consultation</label>
+              <input (change)="searchOneConsultation()" type="date" id="date_consultation"  formControlName="date_consultation" class="form-control">
               <label for="date_jour">Date examen</label>
               <input type="date" id="date_jour"  formControlName="date_jour" class="form-control">
               <label for="consultation_id">Consultation liée</label>
               <select formControlName="consultation_id" id="consultation_id" class="form-control form-select">
                 <option value="">Choisir une consultation</option>
-                <option *ngFor="let consul of oneConsultation" value="{{consul?.slug}}">{{consul.date_visite | date:'dd/MM/yyyy' }}</option>
+                <option *ngFor="let consul of onePatient?.consultation" value="{{consul?.slug}}">Consultation du: {{consul?.date_visite | date:'dd/MM/yyyy' }}</option>
               </select>
             </div>
             <div class="col-md-6">
@@ -82,7 +86,7 @@
           </div>
           <div class="row">
             <div class="col-md-4 offset-md-3">
-              <button class="rounded-2" (click)="enregistrer()"  type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%">
+              <button *ngIf="validateChampsFormulaire()" class="rounded-2" (click)="enregistrer()"  type="submit" nz-button nzType="primary" style="color:white;border: none;background: #1423DC;color:white;margin-left: 17px;padding-left: 15px;padding-right: 15px;padding-bottom: 8px;padding-top: 8px;margin-top: 1%">
                 <span>Enregister</span>
               </button>
             </div>
@@ -92,3 +96,5 @@
     </nz-card>
   </div>
 </div>
+  </div>
+</nz-modal>

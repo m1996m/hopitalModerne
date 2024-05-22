@@ -1,14 +1,31 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BaseService} from "../../base.service";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
+import {HttpHelper} from "../../../../core/helpers/http.helper";
+import {ConsultationDto} from "./dto/consultation.dto";
+import {GlobalDtoSend} from "../global/global.dto.send";
+import {ConsultationSendDto} from "./dto/consultation.send.dto";
+import {ConsultationEntity} from "../../../../core/entities/consultation.entity";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConsultationService {
 
-  constructor(private http:HttpClient,private base:BaseService) { }
+  private readonly routePrefix = 'consultation';
+  public isVisible = false;
+  private modalStateSource = new Subject<boolean>();
+  modalState$ = this.modalStateSource.asObservable();
+
+  constructor(
+    private readonly httpHelper: HttpHelper
+  ) {
+  }
+
+  notifyModalState(isVisible: boolean): void {
+    this.modalStateSource.next(isVisible);
+  }
 
   private printSubject = new BehaviorSubject<boolean>(false);
   printObservable = this.printSubject.asObservable();
@@ -17,32 +34,34 @@ export class ConsultationService {
     this.printSubject.next(printing);
   }
 
-  createconsultation(consultation:any){
-    return this.http.post(this.base.lien+'consultation',consultation);
+  createconsultation(consultation: any){
+    return this.httpHelper.request<any>('POST', `${this.routePrefix}`, consultation);
   }
 
-  update(consultation:any, slug:any){
-    return this.http.patch(this.base.lien+'consultation/'+slug,consultation);
+  update(consultation: any, slug: string){
+    return this.httpHelper.request<any>('PATCH', `${this.routePrefix}/`+slug, consultation);
   }
 
-  recherche(consultation:any){
-    return this.http.post(this.base.lien+'consultation/recherche',consultation);
+  recherche(consultation: ConsultationSendDto){
+    return this.httpHelper.request<ConsultationDto>('POST', `${this.routePrefix}/recherch`, consultation);
   }
 
-  rechercheConsultationExamenNone(consultation:any){
-    return this.http.post(this.base.lien+'consultation/examen/recherche',consultation);
+  rechercheConsultationExamenNone(consultation: GlobalDtoSend){
+    return this.httpHelper.request<ConsultationDto>('GET', `${this.routePrefix}/examen/recherche`, null,
+      {content: consultation.content});
   }
 
-  getAllconsultation(data:any){
-    return this.http.post(this.base.lien+'consultation/liste',data);
+  getAllconsultation(data: GlobalDtoSend){
+    return this.httpHelper.request<ConsultationDto>('GET', `${this.routePrefix}/liste/getAll`, null,
+      {content: data.content});
   }
 
-  getOneconsultation(id:any){
-    return this.http.get(this.base.lien+'consultation/'+id);
+  getOneconsultation(slug: string){
+    return this.httpHelper.request<ConsultationEntity>('GET', `${this.routePrefix}/${slug}`);
   }
 
-  delete(id:any){
-    return this.http.delete(this.base.lien+'consultation/'+id);
+  delete(slug: string){
+    return this.httpHelper.request<any>('DELETE', `${this.routePrefix}/${slug}`);
   }
 
 }

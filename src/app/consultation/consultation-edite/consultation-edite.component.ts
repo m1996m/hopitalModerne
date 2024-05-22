@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
-import {ConsultationModel} from "../../core/models/consultation.model";
 import {HopitalService} from "../../shared/services/web-services/hopital/hopital.service";
 import {FormBuilder} from "@angular/forms";
 import {ServiceService} from "../../shared/services/web-services/service/service.service";
 import {ConsultationService} from "../../shared/services/web-services/consultation/consultation.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {ConnexionService} from "../../shared/services/authService/connextion/connexion.service";
 import {PatientService} from "../../shared/services/web-services/patient/patient.service";
 import {RdvService} from "../../shared/services/web-services/rdv/rdv.service";
+import {ConsultationEntity} from "../../core/entities/consultation.entity";
+import {RdvResponseDto} from "../../shared/services/web-services/rdv/dto/rdv-response.dto";
+import {HopitalReponseDto} from "../../shared/services/web-services/hopital/dto/hopital-reponse.dto";
+import {PatientResponseDto} from "../../shared/services/web-services/patient/dto/patient-response.dto";
+import {PatientEntity} from "../../core/entities/patient.entity";
 
 @Component({
   selector: 'app-consultation-edite',
@@ -17,16 +21,16 @@ import {RdvService} from "../../shared/services/web-services/rdv/rdv.service";
 export class ConsultationEditeComponent {
   formulaire:any;
   consultation: any;
-  hopitals:any;
-  slugHopital='';
-  rdvs:any;
-  slugPersonnel:any;
-  slugSelect:any;
+  hopitals: HopitalReponseDto = [];
+  slugHopital = '';
+  rdvs: RdvResponseDto = [];
+  slugPersonnel = '';
+  slugSelect = '';
   current = 0;
   index = 'First-content';
-  onePatient:any;
-  patients:any;
-  dateJour:any;
+  onePatient!: PatientEntity;
+  patients: PatientResponseDto = [];
+  dateJour = '';
   currentStartDate = new Date();
   plaintes='';
   allergies='';
@@ -45,25 +49,75 @@ export class ConsultationEditeComponent {
   inputValue = "";
   isResultat = false;
   id_slug = '';
+  yourCustomStyles = {
+    height: '500px', // Exemple : définir la hauteur
+    padding: '20px' // Exemple : définir le padding
+  };
+  isVisible = false;
+  isConclusion = true;
+  isDiagnotic = true;
+  isPatient = true;
 
-  constructor(private hopitalServie:HopitalService, private fb: FormBuilder,private activiteService: ServiceService,
-              private consultationService: ConsultationService, private route: Router, private connexionService: ConnexionService,
-              private patientService: PatientService, private rdvService: RdvService, private activateRoute: ActivatedRoute,
+  constructor(
+    private hopitalServie:HopitalService,
+    private fb: FormBuilder,
+    private activiteService: ServiceService,
+    private consultationService: ConsultationService,
+    private route: Router,
+    private connexionService: ConnexionService,
+    private patientService: PatientService,
+    private rdvService: RdvService,
   ) {
   }
 
   ngOnInit():void{
-    this.id_slug = this.activateRoute.snapshot.params['id'];
     this.chargeFonction();
     this.initForm();
   }
 
-  getOneConsultation(){
-    this.consultationService.getOneconsultation(this.id_slug).subscribe((data:any)=>{
-      this.consultation = data;
-      this.initForm();
-      this.initTabListe(data);
-    });
+  verificationPatient(){
+    this.isPatient = false;
+    if (this.formulaire.value['patient_id'].length>2 && this.formulaire.value['date_visite'].length>3 &&
+      this.formulaire.value['taille'].length>2 &&
+      this.formulaire.value['poids'].length>0 && this.formulaire.value['rdv_id'].length>1 &&
+      this.formulaire.value['situation'].length>3){
+      this.isPatient = true;
+    }
+  }
+
+
+  showModal(consultation: ConsultationEntity): void {
+    this.isVisible = true;
+    this.consultation = consultation;
+    this.initForm();
+    this.initTabListe(this.consultation);
+    this.getRdv();
+    this.consultationService.notifyModalState(this.isVisible);
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+    this.consultationService.notifyModalState(this.isVisible);
+  }
+
+  verificationDiagnotic(){
+    this.isDiagnotic = false;
+    if (
+      this.formulaire.value['fumeur'].length>2 && this.formulaire.value['buveur'].length>2 &&
+      this.formulaire.value['cout'].length > 0
+    ){
+      this.isDiagnotic = true;
+    }
+  }
+
+  verificationConclusion(){
+    this.isConclusion = false;
+    setTimeout(()=>{
+      if (this.resultatsT.length > 0){
+        this.isConclusion = true;
+      }
+    },2000)
+
   }
 
   initTabListe(data:any){
@@ -121,7 +175,6 @@ export class ConsultationEditeComponent {
 
   getSlug(){
     this.dateJour = this.currentStartDate.toLocaleString().substring(6,10)+'-'+this.currentStartDate.toLocaleString().substring(3,5)+'-'+this.currentStartDate.toLocaleString().substring(0,2);
-    console.log(this.dateJour);
     this.connexionService.getUser();
     if(this.connexionService?.userInfo?.hopital?.length>0 || this.connexionService?.userInfo?.personnel?.length>0){
       if(this.connexionService.userInfo.role=="USER_HOPITAL"){
@@ -300,7 +353,6 @@ export class ConsultationEditeComponent {
     this.patientService.getOnepatient(data).subscribe((data:any)=>{
       this.onePatient= data;
       this.formulaire.patchValue({
-        //email: this.onePatient.username,
         slug: btoa(dateStrinb),
         personnel_id: this.connexionService.userInfo.slug,
         patient: data.slug
@@ -310,7 +362,6 @@ export class ConsultationEditeComponent {
 
   chargeFonction(){
     this.getSlug();
-    this.getOneConsultation();
     this.getPatient();
     this.getRdv();
   }
@@ -327,32 +378,29 @@ export class ConsultationEditeComponent {
       date_visite: this.consultation?.date_visite,
       personnel_id: this.slugSelect,
     });
-    console.log(this.formulaire.value);
-    this.consultationService.update(this.formulaire.value,this.id_slug).subscribe((data:any)=>{
-      this.route.navigate(['/consultation']);
+    this.consultationService.update(this.formulaire.value,this.consultation.slug).subscribe((data)=>{
+      this.handleCancel();
     });
   }
 
   getRdv(){
-    this.rdvService.getAllrdv({'content':this.dateJour, 'fin':this.dateJour, 'personnel_id': this.slugPersonnel}).subscribe((data:any)=>{
+    let date = this.consultation.date_visite.toLocaleString().substring(0,10);
+    this.rdvService.getAllrdv({'debut': date, 'fin': date,
+      'personnel_id': this.consultation.personnel_id}).subscribe((data:any)=>{
       this.rdvs = data;
     });
   }
 
   //Steps
 
-
   pre(): void {
     this.current -= 1;
-    //this.changeContent();
+    this.verificationPatient()
   }
 
   next(): void {
     this.current += 1;
-    // this.changeContent();
+    this.verificationPatient()
   }
 
-  done(): void {
-    console.log('done');
-  }
 }

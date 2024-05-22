@@ -1,14 +1,32 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BaseService} from "../../base.service";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
+import {HttpHelper} from "../../../../core/helpers/http.helper";
+import {FormBuilder} from "@angular/forms";
+import {GlobalDtoSend, GlobalDtoSendStringOneDate} from "../global/global.dto.send";
+import {GlobalSuccessDto} from "../global/globalSuccess.dto";
+import {ExamenEntity} from "../../../../core/entities/examen.entity";
+import {ExamenResponseDto} from "./dto/examen-response.dto";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExamenService {
 
-  constructor(private http:HttpClient,private base:BaseService) { }
+  private readonly routePrefix = 'examen';
+  public isVisible = false;
+  private modalStateSource = new Subject<boolean>();
+  modalState$ = this.modalStateSource.asObservable();
+
+  constructor(
+    private readonly httpHelper: HttpHelper
+  ) {
+  }
+
+  notifyModalState(isVisible: boolean): void {
+    this.modalStateSource.next(isVisible);
+  }
 
   private printSubject = new BehaviorSubject<boolean>(false);
   printObservable = this.printSubject.asObservable();
@@ -17,27 +35,34 @@ export class ExamenService {
     this.printSubject.next(printing);
   }
 
-  createexamen(examen:any){
-    return this.http.post(this.base.lien+'examen',examen);
+  createexamen(examen: FormBuilder){
+    return this.httpHelper.request<GlobalSuccessDto>('POST', `${this.routePrefix}`, examen);
   }
 
-  update(examen:any, slug:any){
-    return this.http.patch(this.base.lien+'examen/'+slug,examen);
+  update(examen: FormBuilder, slug: string){
+    return this.httpHelper.request<GlobalSuccessDto>('PATCH', `${this.routePrefix}/${slug}`, examen);
   }
 
-  recherche(examen:any){
-    return this.http.post(this.base.lien+'examen/recherche',examen);
+  recherche(globalTwoValueWithDate: GlobalDtoSendStringOneDate){
+    let data = {
+      content: globalTwoValueWithDate.content,
+      date_jour: globalTwoValueWithDate.date_jour
+    }
+    return this.httpHelper.request<ExamenResponseDto>('GET', `${this.routePrefix}/recherche/listeExamen`, null, data);
   }
 
-  getAllexamen(data:any){
-    return this.http.post(this.base.lien+'examen/liste',data);
+  getAllexamen(data: GlobalDtoSend){
+    let datas = {
+      content: data.content
+    }
+    return this.httpHelper.request<ExamenResponseDto>('GET', `${this.routePrefix}/liste/all`, null, datas);
   }
 
-  getOneexamen(id:any){
-    return this.http.get(this.base.lien+'examen/'+id);
+  getOneexamen(slug: string){
+    return this.httpHelper.request<ExamenEntity>('GET', `${this.routePrefix}/${slug}`);
   }
 
-  delete(id:any){
-    return this.http.delete(this.base.lien+'examen/'+id);
+  delete(slug: string){
+    return this.httpHelper.request<GlobalSuccessDto>('DELETE', `${this.routePrefix}/${slug}`);
   }
 }
